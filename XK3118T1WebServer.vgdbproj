@@ -25,7 +25,6 @@
         <string>sketches\Config.h</string>
         <string>sketches\web_terminal_mini.h</string>
         <string>sketches\BrowserServer.h</string>
-        <string>sketches\HttpUpdater.h</string>
         <string>sketches\WiFiModule.h</string>
         <string>sketches\MultiPointsPage.h</string>
         <string>sketches\SettingsPage.h</string>
@@ -33,6 +32,10 @@
         <string>sketches\XK3118T1.h</string>
         <string>sketches\Terminal.h</string>
         <string>sketches\Page.h</string>
+        <string>sketches\scale_server.h</string>
+        <string>sketches\Battery.h</string>
+        <string>sketches\Event.h</string>
+        <string>sketches\UpdaterLocal.h</string>
       </OtherFiles>
     </ProjectModeSettings>
   </Project>

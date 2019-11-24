@@ -6,10 +6,26 @@ BoardClass * Board;
 
 BoardClass::BoardClass() {
 	_blink = new BlinkClass();
+#ifdef INTERNAL_POWER
+	//_power = new PowerClass(EN_NCP, PWR_SW, std::bind(&BoardClass::powerOff, this));
+	_power = new PowerClass(EN_NCP, PWR_SW, [](){
+		Board->powerOff();
+	});	
+	auto startTime = millis();
+	_blink->ledOn();
+	// wait for on power
+	while((millis() - startTime) <= 2000) {
+		delay(10);
+	}
+	_power->on();
+	_blink->ledOff();
+	add(_power);
+#endif
 	_memory = new MemoryClass<MyEEPROMStruct>(&_eeprom);
 	if (!_memory->init()) {
 		doDefault();
 	}	
+	_battery = new BatteryClass(&_eeprom.settings.bat_min, &_eeprom.settings.bat_max);
 	_wifi = new WiFiModuleClass(&_eeprom);
 	serialPort = new SerialPortClass(UART0, &_eeprom.port);
 	SettingsPage = new SettingsPageClass(&_eeprom.settings);
@@ -23,9 +39,17 @@ BoardClass::BoardClass() {
 };
 
 void BoardClass::init() {
+#ifdef INTERNAL_POWER
+	_power->begin(&_eeprom.settings.time_off, &_eeprom.settings.power_time_enable);
+#endif
 	add(_blink);
+	add(_battery);
 	add(_wifi);
 	add(serialPort);
+	_battery->fetchCharge();
+	if (_battery->isDischarged()) {
+		add(new Task(shutDown, 120000));
+	}
 };
 
 void /*ICACHE_RAM_ATTR*/ BoardClass::onSTAGotIP(const WiFiEventStationModeGotIP& evt) {
@@ -66,4 +90,8 @@ bool BoardClass::doDefault() {
 	u.toCharArray(_eeprom.port.user, u.length() + 1);
 	p.toCharArray(_eeprom.port.password, p.length() + 1);
 	return _memory->save();
+}
+
+void shutDown() {	
+	Board->powerOff();
 }

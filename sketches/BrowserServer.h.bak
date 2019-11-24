@@ -10,18 +10,17 @@
 // DNS server
 #define DNS_PORT 53
 
-struct strHTTPAuth{
+typedef struct {
 	String wwwUsername;
 	String wwwPassword;
-};
+} t_HTTPAuth;
 
 class BrowserServerClass : public AsyncWebServer{
 	protected:
-		strHTTPAuth _httpAuth;
+		t_HTTPAuth _httpAuth;
 
 	public:
 	
-		BrowserServerClass(uint16_t port);
 		BrowserServerClass(uint16_t port, char * username, char * password);
 		~BrowserServerClass();
 		void begin();
@@ -53,6 +52,8 @@ class CaptiveRequestHandler : public AsyncWebHandler {
 };
 
 extern AsyncDNSServer dnsServer;
+//extern IPAddress apIP;
+//extern IPAddress netMsk;
 extern IPAddress lanIp;			// Надо сделать настройки ip адреса
 extern IPAddress gateway;
 extern BrowserServerClass server;

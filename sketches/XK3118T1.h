@@ -6,7 +6,8 @@ class KeliXK3118T1Class : public TerminalClass {
 private:
 	bool _reverse = false;
 	int _start = 1, _end = 7;
-	int _sync_byte = '=';
+	int _sync_byte = '=';	
+	int _byte_num = 0;
 		
 public:
 	KeliXK3118T1Class(){};

@@ -7,15 +7,19 @@
 SerialPortClass * serialPort;
 
 
-SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(300), _value(value) {
+SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(200), _value(value) {
 	onRun(std::bind(&SerialPortClass::takeWeight, this));
 	_authenticated = false;
 	unsigned int s = _value->speed;
-	unsigned int p = constrain(s, 600, 9600);
+	unsigned int p = constrain(s, 600, 115200);
 #ifndef ESP8266_USE_GDB_STUB
-	end();
+	//end();
 	begin(p);
+	setTimeout(50);
 #endif
+	XK3118T1.onEvent([](float data) {
+		XK3118T1.detectStable();
+	});
 }
 
 bool SerialPortClass::canHandle(AsyncWebServerRequest *request) {	
@@ -81,8 +85,6 @@ void SerialPortClass::handleValue(AsyncWebServerRequest * request) {
 }
 
 void SerialPortClass::takeWeight() {
-	XK3118T1.handlePort();
-	XK3118T1.detectStable();
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& json = jsonBuffer.createObject();
 	String str = String();
@@ -91,13 +93,15 @@ void SerialPortClass::takeWeight() {
 		json["cmd"] = "swt";
 		json["d"] = "";
 		json["v"] = String(XK3118T1.get_save_value());
-	}else {		
+		json["a"] = XK3118T1.getPoint();
+	}
+	else {		
 		json["cmd"] = "wt";
 		XK3118T1.doData(json);
 	}
 	json.printTo(str);
 	webSocket.textAll(str);
-	updateCache();
+	serialPort->updateCache();
 }
 
 

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include <ESP8266WiFi.h>
 #include <ESP8266NetBIOS.h>
 #include "Task.h"
@@ -27,7 +27,7 @@ private:
 #ifdef MULTI_POINTS_CONNECT
 	Wifilist _accessPoints;
 	int cached_size;
-	bool _enableSSID = true; /* если нет сети в списке*/
+	bool _enableSSID = true; /* РµСЃР»Рё РЅРµС‚ СЃРµС‚Рё РІ СЃРїРёСЃРєРµ*/
 	bool _downloadValue();
 	//bool _uploadValue();
 	bool _dnip;

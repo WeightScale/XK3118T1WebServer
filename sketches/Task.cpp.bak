@@ -4,23 +4,8 @@ Task::Task(){
 	TaskID = (int)this;	
 };
 
-/*Task::Task(unsigned long _interval) {
+Task::Task(unsigned long _interval){
 	enabled = true;
-	_cached_next_run = 0;
-	last_run = millis();
-
-	TaskID = (int)this;
-#ifdef USE_TASK_NAMES
-	TaskName = "Task ";
-	TaskName = TaskName + TaskID;
-#endif
-
-	setInterval(_interval);
-};*/
-
-Task::Task(unsigned long _interval, bool single){
-	enabled = true;
-	_single = single;
 	_cached_next_run = 0;
 	last_run = millis();
 
@@ -33,7 +18,7 @@ Task::Task(unsigned long _interval, bool single){
 	setInterval(_interval);
 };
 
-/*Task::Task(void (*callback)(void), unsigned long _interval){
+Task::Task(void (*callback)(void), unsigned long _interval){
 	enabled = true;
 	onRun(callback);
 	_cached_next_run = 0;
@@ -46,24 +31,7 @@ Task::Task(unsigned long _interval, bool single){
 	#endif
 
 	setInterval(_interval);
-};*/
-
-Task::Task(void(*callback)(void), unsigned long _interval, bool single) {
-	enabled = true;
-	_single = single;
-	onRun(callback);
-	_cached_next_run = 0;
-	last_run = millis();
-
-	TaskID = (int)this;
-#ifdef USE_TASK_NAMES
-	TaskName = "Task ";
-	TaskName = TaskName + TaskID;
-#endif
-
-	setInterval(_interval);
-}
-;
+};
 
 void Task::runned(unsigned long time){
 	// Saves last_run

@@ -16,7 +16,9 @@ typedef struct {
 	unsigned long time;
 }t_save_value;
 
-class TerminalClass  {
+class TerminalClass {
+	//typedef void(*TerminalEventFunc)(float);
+	typedef std::function<void(float)> TerminalEventFunc;
 	protected:				
 		String _w;		
 		float _weight;
@@ -24,14 +26,16 @@ class TerminalClass  {
 		t_save_value _saveWeight = { 0 };
 		long int _time;
 		int _point = 0;				//где находится точка
-	public:	
-		TerminalClass(){};
-		//~TerminalClass();			
+		TerminalEventFunc _onEvent;
+	public :	
+		TerminalClass() {};
+		virtual ~TerminalClass() {};			
 		virtual void handlePort(){};
 		virtual bool saveValueHttp(AsyncWebServerRequest * request){return false;};
 		virtual bool downloadValue(int){return false;};
 		virtual size_t doData(JsonObject& json );
-		virtual void formatValue(char* string){dtostrf(_weight, 6-serialPort->getAccuracy(), serialPort->getAccuracy(), string);};
+		//virtual void formatValue(char* string){dtostrf(_weight, 6-serialPort->getAccuracy(), serialPort->getAccuracy(), string);};
+		virtual void formatValue(char* string){dtostrf(_weight, 6 - _point, _point, string); };
 		virtual String timeCheck(char * b){return _time < millis()? String("no data"):String(b);}; // проверка данных на время если нет новых данных в течении 4 сек			
 		float getWeight(){return _weight;};
 		void detectStable();
@@ -40,6 +44,8 @@ class TerminalClass  {
 		float get_save_value() {
 			return _saveWeight.value;
 		};
+		void onEvent(TerminalEventFunc callback){_onEvent = callback; };
+		int getPoint() {return _point;};
 };
 
 //extern TerminalClass *Terminal;

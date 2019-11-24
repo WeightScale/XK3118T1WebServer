@@ -13,3 +13,6 @@
 
 #define V_BAT_MAX				6.4f
 #define V_BAT_MIN				5.5f
+
+#define LED_ON					HIGH
+#define LED_OFF					LOW

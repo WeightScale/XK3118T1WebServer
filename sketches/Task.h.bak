@@ -15,8 +15,6 @@ protected:
 	unsigned long _cached_next_run;
 	
 	bool _paused = false;
-	//bool _kill = false;
-	bool _single = false;
 
 	/*!
 		IMPORTANT! Run after all calls to run()
@@ -43,10 +41,8 @@ public:
 		String TaskName;			
 	#endif
 	Task();
-	//Task(unsigned long _interval = 0);
-	Task(unsigned long _interval = 0, bool single = false);
-	//Task(void (*callback)(void) = NULL, unsigned long _interval = 0);
-	Task(void(*callback)(void) = NULL, unsigned long _interval = 0, bool single = false);
+	Task(unsigned long _interval = 0);
+	Task(void (*callback)(void) = NULL, unsigned long _interval = 0);
 	virtual ~Task() {};
 	// Set the desired interval for calls, and update _cached_next_run
 	virtual void setInterval(unsigned long _interval);
@@ -66,8 +62,4 @@ public:
 	void resume(){_paused = false; runned();};
 	void pause(){_paused = true;};
 	void updateCache(){runned();}
-	//bool kill() {return _kill;};
-	//void kill(bool kill) {_kill = kill;};
-	void single(bool single) {_single = single;};
-	bool single() {return _single;};
 };

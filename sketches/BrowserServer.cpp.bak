@@ -1,7 +1,7 @@
 #include "BrowserServer.h"
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
-#include "UpdaterLocal.h"
+#include "HttpUpdater.h"
 #include <functional>
 #include "Board.h"
 #include <AsyncJson.h>
@@ -32,8 +32,7 @@ void BrowserServerClass::begin(){
 	addHandler(&webSocket);
 	addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);
 	addHandler(new SPIFFSEditor(_httpAuth.wwwUsername.c_str(), _httpAuth.wwwPassword.c_str()));	
-	addHandler(new UpdaterLocalClass("sa", "654321"));
-	//addHandler(new HttpUpdaterClass("sa", "654321"));
+	addHandler(new HttpUpdaterClass("sa", "654321"));
 	addHandler(serialPort);
 	addHandler(SettingsPage);
 #ifdef MULTI_POINTS_CONNECT
@@ -70,7 +69,7 @@ void BrowserServerClass::init(){
 		String str = String("Heap: ");
 		str += String(ESP.getFreeHeap());
 		str += " client: ";
-		str += String(webSocket.count());
+		str += String(webSocket.count());		
 		request->send(200, F("text/plain"), str);
 	});
 	on("/rst",HTTP_ANY,[this](AsyncWebServerRequest * request){

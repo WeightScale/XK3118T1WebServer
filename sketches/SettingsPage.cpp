@@ -80,6 +80,6 @@ size_t SettingsPageClass::doSettings(JsonObject &root) {
 	info["id_sta_ip"] = WiFi.localIP().toString();
 	info["id_ap_ip"] = WiFi.softAPIP().toString();
 	info["id_mac"] = WiFi.macAddress();
-	info["id_vr"] = SKETCH_VERSION;
+	info["id_vr"] = PRODUCT;
 	return root.measureLength();
 };

@@ -1,26 +1,28 @@
 ﻿#pragma once
 #include "Arduino.h"
 
-#define WEB_TERMINAL2			1
-#define WEB_TERMINAL_MINI		2
-#define WEB_CRANE				3
-#define SCALE_SERVER			4
+#define VERSION(plate,name, num) plate name num
 
-//#define BOARD WEB_TERMINAL2
-#define BOARD WEB_TERMINAL_MINI
-//#define BOARD WEB_CRANE
-//#define BOARD SCALE_SERVER
-
-//#define BATTERY_6V				6
-//#define BATTERY_4V				4
-
-//#define EXTERNAL_POWER 1
-//#define INTERNAL_POWER 2
+//#define WEB_TERMINAL2			"web_2_"
+//#define WEB_TERMINAL_MINI		"web_mini_"
+//#define WEB_CRANE				"web_crane_"	
+#define SCALE_SERVER			"scale_server_"
 
 //#define POWER_DEBUG
+//#define DEBUG_SERIAL
 #define HTML_PROGMEM			//Использовать веб страницы из flash памяти
 #define MULTI_POINTS_CONNECT	/* Использовать для использования с несколькими точками доступа */
 //#define ESP8266_USE_GDB_STUB    //Comment out the definition below if you don't want to use the ESP8266 gdb stub.
+
+#ifdef DEBUG_SERIAL
+#ifdef DEBUG_ESP_PORT
+#define DEBUG_BOARD(...) DEBUG_ESP_PORT.printf( __VA_ARGS__ )
+#endif
+#endif
+
+#ifndef DEBUG_BOARD
+#define DEBUG_BOARD(...)
+#endif
 
 #ifdef HTML_PROGMEM
 	#include "Page.h"
@@ -36,31 +38,45 @@
 #define MAX_EVENTS 100				/** Количество записей событий*/
 
 
-#if BOARD == WEB_TERMINAL2
+#ifdef  WEB_TERMINAL2
 	#include "web_terminal2.h"
 	#define INTERNAL_POWER
 	#define PLAN_BATTERY			BATTERY_4V
 	#define SKETCH_VERSION			"web_terminal2.001"
 	#define SPIFFS_VERSION			SKETCH_VERSION
-#elif BOARD == WEB_TERMINAL_MINI
+#elif defined( WEB_TERMINAL_MINI)
 	#include "web_terminal_mini.h"
 	#define EXTERNAL_POWER
 	//#define PLAN_BATTERY			BATTERY_6V	
 	#define SKETCH_VERSION			"web_terminal_mini.001"
 	#define SPIFFS_VERSION			SKETCH_VERSION
-#elif BOARD == WEB_CRANE
+#elif defined(WEB_CRANE)
 	#include "web_crane.h"
 	#define INTERNAL_POWER
 	#define PLAN_BATTERY			BATTERY_4V
 	#define SKETCH_VERSION			"web_crane.001"
 	#define SPIFFS_VERSION			SKETCH_VERSION
-#elif SCALE_SERVER
+#elif defined(SCALE_SERVER)
 	#include "scale_server.h"
 	#define INTERNAL_POWER
-	#define PLAN_BATTERY			BATTERY_4V
-	#define SKETCH_VERSION			"scale_server.001"
-	#define SPIFFS_VERSION			SKETCH_VERSION
-#endif // BOARD == WEB_TERMINAL2
+	#define PLATE					SCALE_SERVER
+	#define NUM_VRS					"012b"
+	#ifdef SOFT_SET
+		#ifdef ZERO_SET
+			#define NAME			"soft_8266_4m_z."
+		#else
+			#define NAME			"soft_8266_4m."
+		#endif // ZERO_SET
+	#else
+		#ifdef ZERO_SET
+			#define NAME			"8266_4m_z."
+		#else			
+			#define NAME			"8266_4m."			
+		#endif // ZERO_SET
+	#endif // SOFT_SET
+#endif //SCALE_SERVER
+
+#define PRODUCT				VERSION(PLATE, NAME, NUM_VRS)
 
 typedef struct{
 #ifdef MULTI_POINTS_CONNECT
@@ -86,11 +102,17 @@ typedef struct {
 } serial_port_t;
 
 typedef struct {
+#ifdef INTERNAL_POWER
+	bool power_time_enable;
+	unsigned int time_off;
+#endif
 	char hostName[16];
 	char hostUrl[0xff];
 	int hostPin;
 	char user[16];
 	char password[16];
+	unsigned int bat_max; /* максимальный заряд батареи */
+	unsigned int bat_min; /* минимальный заряд батареи */
 } settings_t;
 
 struct MyEEPROMStruct {
