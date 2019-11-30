@@ -24,10 +24,6 @@
 #define DEBUG_BOARD(...)
 #endif
 
-#ifdef HTML_PROGMEM
-	#include "Page.h"
-#endif
-
 //#define MY_HOST_NAME "scl"
 //#define SOFT_AP_SSID "SCALES"
 #define SOFT_AP_PASSWORD "12345678"
@@ -58,6 +54,7 @@
 	#define SPIFFS_VERSION			SKETCH_VERSION
 #elif defined(SCALE_SERVER)
 	#include "scale_server.h"
+	#define SCALES_AXES
 	#define INTERNAL_POWER
 	#define PLATE					SCALE_SERVER
 	#define NUM_VRS					"012b"
@@ -77,6 +74,13 @@
 #endif //SCALE_SERVER
 
 #define PRODUCT				VERSION(PLATE, NAME, NUM_VRS)
+
+#ifdef HTML_PROGMEM
+	#include "Page.h"
+#endif
+#ifdef SCALES_AXES
+	#include "AxesClass.h"
+#endif // SCALES_AXES
 
 typedef struct{
 #ifdef MULTI_POINTS_CONNECT

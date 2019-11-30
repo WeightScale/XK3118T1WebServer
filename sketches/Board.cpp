@@ -8,14 +8,14 @@ BoardClass::BoardClass() {
 	_blink = new BlinkClass();
 #ifdef INTERNAL_POWER
 	//_power = new PowerClass(EN_NCP, PWR_SW, std::bind(&BoardClass::powerOff, this));
-	_power = new PowerClass(EN_NCP, PWR_SW, [](){
+	_power = new PowerClass(EN_NCP, PWR_SW, [](){/* Событие выключения питания */
 		Board->powerOff();
 	});	
 	auto startTime = millis();
 	_blink->ledOn();
 	// wait for on power
 	while((millis() - startTime) <= 2000) {
-		delay(10);
+		delay(100);
 	}
 	_power->on();
 	_blink->ledOff();
@@ -32,10 +32,7 @@ BoardClass::BoardClass() {
 #ifdef MULTI_POINTS_CONNECT
 	MultiPointsPage = new MultiPointsPageClass(&_eeprom.net, _eeprom.settings.user, _eeprom.settings.password);	
 	_wifi->loadPoints();
-#endif // MULTI_POINTS_CONNECT
-	STAGotIP = WiFi.onStationModeGotIP(std::bind(&BoardClass::onSTAGotIP, this, std::placeholders::_1));	
-	stationDisconnected = WiFi.onStationModeDisconnected(std::bind(&BoardClass::onStationDisconnected, this, std::placeholders::_1));
-	stationConnected = WiFi.onStationModeConnected(std::bind(&BoardClass::onStationConnected, this, std::placeholders::_1));
+#endif // MULTI_POINTS_CONNECT	
 };
 
 void BoardClass::init() {
@@ -46,28 +43,55 @@ void BoardClass::init() {
 	add(_battery);
 	add(_wifi);
 	add(serialPort);
+	_battery->onEventDischarged([](unsigned char charge) {
+		webSocket.textAll("{\"cmd\":\"dchg\"}");
+		String msg = "Батарея разряжена ";
+		msg += String(charge) + "%";
+		Board->add(new EventTaskClass(LOG, msg));
+		Board->add(new Task(shutDown, 120000));
+	});
 	_battery->fetchCharge();
-	if (_battery->isDischarged()) {
-		add(new Task(shutDown, 120000));
+	/*if (_battery->isDischarged()) {
+		
+	}*/
+	_wifi->onEventConnectSTA([](bool status) {
+		if (status){
+			Board->onSTA();
+		}else{
+			Board->offSTA();
+		}
+	});
+};
+
+void BoardClass::handleBinfo(AsyncWebServerRequest *request) {
+	if (!request->authenticate(_eeprom.settings.user, _eeprom.settings.password))
+		if (!server.checkAdminAuth(request)) {
+			return request->requestAuthentication();
+		}
+	if (request->args() > 0) {
+		bool flag = false;
+		if (request->hasArg("bmax")) {
+			float t = request->arg("bmax").toFloat();
+			_eeprom.settings.bat_max = CONVERT_V_TO_ADC(t);
+			flag = true;
+		}
+		if (flag) {
+			if (request->hasArg("bmin")) {
+				float t = request->arg("bmin").toFloat();
+				_eeprom.settings.bat_min = CONVERT_V_TO_ADC(t);
+			}
+			else {
+				flag = false;
+			}				
+		}
+		if (flag && _memory->save()) {
+			goto url;
+		}
+		return request->send(400);
 	}
-};
-
-void /*ICACHE_RAM_ATTR*/ BoardClass::onSTAGotIP(const WiFiEventStationModeGotIP& evt) {
-	WiFi.setAutoConnect(true);
-	WiFi.setAutoReconnect(true);
-	NBNS.begin(WiFi.hostname().c_str());
-	onSTA();
+url:
+	request->send(SPIFFS, request->url());
 }
-
-void BoardClass::onStationConnected(const WiFiEventStationModeConnected& evt) {	
-	WiFi.softAP(_eeprom.settings.hostName, SOFT_AP_PASSWORD, evt.channel);    //Устанавливаем канал как роутера
-};
-
-void BoardClass::onStationDisconnected(const WiFiEventStationModeDisconnected& evt) {	
-	offSTA();
-	NBNS.end();	
-	webSocket.textAll("{\"cmd\":\"error\",\"ssid\":\"" + evt.ssid + "\",\"status\":\"" + String(evt.reason) + "\"}");
-};
 
 bool BoardClass::doDefault() {
 	String u = F("admin");
@@ -93,5 +117,5 @@ bool BoardClass::doDefault() {
 }
 
 void shutDown() {	
-	Board->powerOff();
+	Board->power()->off();
 }

@@ -91,9 +91,6 @@ public : PowerClass(byte swch, byte button_signal, PowerFunction function)	: Tas
 };
 #endif // INTERNAL_POWER
 
-
-
-
 class BlinkClass : public Task {
 public:
 	unsigned int _flash = 500;
@@ -135,10 +132,7 @@ private:
 #endif // INTERNAL_POWER
 	BatteryClass *_battery;
 	BlinkClass *_blink;
-	WiFiModuleClass * _wifi;
-	WiFiEventHandler stationConnected;
-	WiFiEventHandler stationDisconnected;
-	WiFiEventHandler STAGotIP;
+	WiFiModuleClass * _wifi;	
 	MemoryClass<MyEEPROMStruct> *_memory;
 	BrowserServerClass *_server;
 public:
@@ -163,25 +157,17 @@ public:
 	void onSTA() { _softConnect = true; _blink->onRun(std::bind(&BlinkClass::blinkSTA, _blink)); };
 	void offSTA() { _softConnect = false; _blink->onRun(std::bind(&BlinkClass::blinkAP, _blink)); };
 	bool softConnect() {return _softConnect;};
-	void softConnect(bool connect) {_softConnect = connect; };
-	void onStationConnected(const WiFiEventStationModeConnected& evt);
-	void onStationDisconnected(const WiFiEventStationModeDisconnected& evt);
-	void onSTAGotIP(const WiFiEventStationModeGotIP& evt);
+	void softConnect(bool connect) {_softConnect = connect; };	
 	MemoryClass<MyEEPROMStruct> *memory(){return _memory ;};
 	WiFiModuleClass * wifi() {return _wifi;};
+	void handleBinfo(AsyncWebServerRequest *request);
 	bool saveEvent(const String& event, float value);
 	bool doDefault();
 #ifdef INTERNAL_POWER
+	PowerClass * power() {return _power;};
 	void powerOff() {
-		//ws.closeAll();
-		//delay(2000);
-		//browserServer.stop();
-		//SPIFFS.end();
-		//Scale.power_down();  /// Выключаем ацп
-		//_power->off();
-		//digitalWrite(EN_NCP, LOW);  /// Выключаем стабилизатор
-		
-		//ESP.reset();
+		webSocket.closeAll();
+		server.stop();		
 		_memory->close();
 	}
 #endif // INTERNAL_POWER

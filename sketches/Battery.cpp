@@ -8,9 +8,6 @@ BatteryClass::BatteryClass(unsigned int *min, unsigned int *max) : Task(20000) {
 	_max = max;
 	_min = min;	
 	//fetchCharge();
-#ifdef DEBUG_BATTERY
-	_isDischarged = false;
-#endif // DEBUG_BATTERY
 }
 
 unsigned int BatteryClass::fetchCharge() {
@@ -18,16 +15,20 @@ unsigned int BatteryClass::fetchCharge() {
 	_charge = _get_adc(1);
 	_charge = constrain(_charge, *_min, *_max);
 	_charge = map(_charge, *_min, *_max, 0, 100);
-	_isDischarged = _charge <= 5;
-	if (_isDischarged) {
+	//_isDischarged = _charge <= 5;
+	if (_charge <= 5){
+		_onEventDischarged(_charge);	
+	}
+	/*if (_isDischarged) {
 		webSocket.textAll("{\"cmd\":\"dchg\"}");
 		String msg = "Батарея разряжена ";
 		msg += String(_charge) + "%";
 		Board->add(new EventTaskClass(LOG,  msg ));
-	}
+	}*/
+#else
+	_charge = 51;
+#endif // !DEBUG_BATTERY	
 	return _charge;
-#endif // !DEBUG_BATTERY
-	return 51;
 }
 
 unsigned int BatteryClass::_get_adc(byte times) {

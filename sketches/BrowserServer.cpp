@@ -9,6 +9,7 @@
 #include "MultiPointsPage.h"
 #include "SettingsPage.h"
 #include "XK3118T1.h"
+#include "StreamString.h"
 
 IPAddress lanIp;			// Надо сделать настройки ip адреса
 IPAddress gateway;
@@ -54,6 +55,68 @@ void BrowserServerClass::init(){
 		json.printTo(str);
 		request->send(200, "text/json", str);
 	});
+
+	on("/geta",HTTP_ANY,[this](AsyncWebServerRequest * request) {
+		AsyncWebServerResponse *response = request->beginChunkedResponse("text/plain",[](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {	
+			int size;
+			DynamicJsonBuffer jsonBuffer;
+			JsonObject& json = jsonBuffer.createObject();
+			json["cmd"] = "sad";
+			JsonArray& array = json.createNestedArray("a");	
+			for (int i = 0; i < Axes._array.size(); i++) {		
+				array.add(Axes._array[i]);
+			}
+			
+			String str = String();
+			json.printTo(str);
+			
+			int size_str = (str.length() * sizeof(char))+1;
+			
+			
+			if ((size_str - index) > maxLen) {				
+				size = maxLen;
+			}else{
+				size = 	size_str - index;
+			}	
+					
+			str.getBytes(buffer, size, index);
+			/*for (int i = 0; i < size; i++) {
+				buffer[i] = Axes._array[i + index];
+			}*/						
+			return size;
+		});
+		//response->addHeader("Server", "ESP Async Web Server");
+		request->send(response);
+		#ifdef DEBUG_SERIAL
+		/*AsyncJsonResponse * response = new AsyncJsonResponse();
+		response->addHeader("Server", "ESP Async Web Server");
+		JsonObject& json = response->getRoot();
+		json["cmd"] = "sad";
+		JsonArray& array = json.createNestedArray("a");
+		auto size = Axes._array.size();		
+		for (int i = 0; i < size; i++) {			
+			array.add(Axes._array[i]);
+		}
+		response->setLength();
+		request->send(response);*/
+		/*DynamicJsonBuffer jsonBuffer;
+		JsonObject& json = jsonBuffer.createObject();
+		json["cmd"] = "sad";
+		JsonArray& array = json.createNestedArray("a");
+		auto size = Axes._array.size();		
+		for (int i = 0; i < size; i++) {
+			JsonObject& p = array.createNestedObject();
+			p["d"] = Axes._array[i];
+		}
+		String str;
+		json.printTo(str);
+		request->send(200, F("text/plain"), str);*/
+		//request->send(str, "text/json", str.length());
+		
+		#endif // DEBUG_SERIAL
+	});
+
+
 	on("/settings.json", HTTP_ANY, std::bind(&SettingsPageClass::handleValue, SettingsPage, std::placeholders::_1));
 	on("/net.json", HTTP_ANY, std::bind(&MultiPointsPageClass::handleValue, MultiPointsPage, std::placeholders::_1));
 	on("/port.json", HTTP_ANY, std::bind(&SerialPortClass::handleValue, serialPort, std::placeholders::_1));
@@ -83,6 +146,7 @@ void BrowserServerClass::init(){
 			request->send(400);
 	});
 	on("/rssi", handleRSSI);
+	on("/binfo.html", std::bind(&BoardClass::handleBinfo, Board, std::placeholders::_1));
 #ifdef HTML_PROGMEM
 	on("/",[](AsyncWebServerRequest * reguest){	reguest->send_P(200,F("text/html"),index_html);});								/* Главная страница. */	 
 	on("/global.css",[](AsyncWebServerRequest * reguest){	reguest->send_P(200,F("text/css"),global_css);});					/* Стили */
@@ -268,6 +332,13 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 			}				
 		}else 
 #endif //MULTI_POINTS_CONNECT
+#ifdef SCALES_AXES
+		if (strcmp(command, "gad") == 0) {
+			Board->add(new AxesArrayTaskClass(client));
+			return;
+		}else		  
+#endif // SCALES_AXES
+
 		if (strcmp(command, "wt") == 0){
 			XK3118T1.handlePort();
 			DynamicJsonBuffer jsonBuffer;

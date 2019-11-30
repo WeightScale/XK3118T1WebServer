@@ -36,6 +36,7 @@
         <string>sketches\Battery.h</string>
         <string>sketches\Event.h</string>
         <string>sketches\UpdaterLocal.h</string>
+        <string>sketches\AxesClass.h</string>
       </OtherFiles>
     </ProjectModeSettings>
   </Project>

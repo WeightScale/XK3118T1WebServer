@@ -17,9 +17,14 @@ void setup(){
 #endif
 	Board = new BoardClass();
 	Board->init();
-	server.begin();
-	//DEBUG_BOARD("START...");
-	serialPort->printf("START...");
+	server.begin();	
+#ifdef DEBUG_SERIAL
+	int ii = 10;
+	for (int i=0; i < ii; i++){
+		Axes._array.push_back(i*100);		
+	}
+#endif // DEBUG_SERIAL
+
 }
 
 void loop(){
@@ -28,45 +33,5 @@ void loop(){
 	Board->wifi()->connect();
 	delay(1);
 #endif // MULTI_POINTS_CONNECT
-	//serialPort->println("Start");
-	//DEBUG_BOARD("START...");
-	/*if(serialPort->available()) {
-		if (serialPort->read() == '=') {
-			String _w = "=";
-			while (serialPort->available()) {
-				int b = serialPort->read();
-				_w = _w + char(b);
-				if ((char)b == ')') {
-					serialPort->println(_w);
-					return;
-				}
-			}	
-		}
-		
-	}
-	*/
-	/*String str = String();
-	while(serialPort->available()) {
-		int b = serialPort->read();
-		str = str + (char)b;
-		//serialPort->write(b);
-		if ((char)b == '\n') {
-			serialPort->print(str);
-			str = "";
-		}
-	}
-	uint64_t timeOld = millis();
-	while ((millis() < (timeOld + 2))) {
-		
-		while (serialPort->available()) {
-			int b = serialPort->read();
-			str = str + (char)b;
-			//serialPort->write(b);
-			if((char)b == '\n') {
-				serialPort->print(str);
-				str = "";
-			}
-			timeOld = millis();
-		}		
-	}*/
+	//Axes.handle(100);
 }

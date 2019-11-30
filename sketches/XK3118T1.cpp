@@ -31,7 +31,7 @@ void KeliXK3118T1Class::handlePort() {
 	}*/
 	
 	while (serialPort->available()){
-		int b = serialPort->read();
+		int b = serialPort->read();			
 		if (_byte_num > 0){
 			if (_byte_num >= _start && _byte_num <= _end) {							
 				_w = _reverse ? char(b) + _w : _w + char(b);
@@ -44,6 +44,10 @@ void KeliXK3118T1Class::handlePort() {
 				_time = millis() + serialPort->getTime();
 				_byte_num = 0;
 				_onEvent(_weight);
+#ifdef SCALES_AXES
+				Axes.handle(_weight);
+#endif // SCALES_AXES
+
 			}else
 				_byte_num++;
 		}else{

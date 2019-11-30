@@ -7,7 +7,7 @@
 SerialPortClass * serialPort;
 
 
-SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(200), _value(value) {
+SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(500), _value(value) {
 	onRun(std::bind(&SerialPortClass::takeWeight, this));
 	_authenticated = false;
 	unsigned int s = _value->speed;
@@ -17,9 +17,13 @@ SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSeria
 	begin(p);
 	setTimeout(50);
 #endif
-	XK3118T1.onEvent([](float data) {
+	XK3118T1.onEvent([](float data) {		
 		XK3118T1.detectStable();
 	});
+#ifdef SCALES_AXES
+	Axes.begin(50);
+#endif // SCALES_AXES
+
 }
 
 bool SerialPortClass::canHandle(AsyncWebServerRequest *request) {	
@@ -92,13 +96,14 @@ void SerialPortClass::takeWeight() {
 		XK3118T1.setIsSave(false);
 		json["cmd"] = "swt";
 		json["d"] = "";
-		json["v"] = String(XK3118T1.get_save_value());
-		json["a"] = XK3118T1.getPoint();
+		json["v"] = String(XK3118T1.get_save_value());		
 	}
 	else {		
 		json["cmd"] = "wt";
 		XK3118T1.doData(json);
+		Board->battery()->doData(json);
 	}
+	json["a"] = XK3118T1.getPoint();
 	json.printTo(str);
 	webSocket.textAll(str);
 	serialPort->updateCache();

@@ -28,9 +28,6 @@ void TaskController::run(){
 	for (const auto& t : _tasks) {
 		if (t->shouldRun(time)){
 			t->run();
-			if (t->single()){
-				remove(t);
-			}
 		}						
 	}
 	// ThreadController extends Thread, so we should flag as runned thread

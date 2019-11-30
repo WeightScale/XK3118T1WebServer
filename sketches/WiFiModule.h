@@ -21,9 +21,13 @@ struct EntryWiFi {
 typedef std::vector<EntryWiFi> Wifilist;
 
 class WiFiModuleClass : /*public ESP8266WiFiClass,*/ public Task {
+	typedef void(*_Func)(bool);
 private:	
 	IPAddress _lanIp;
 	IPAddress _gate;
+	WiFiEventHandler stationConnected;
+	WiFiEventHandler stationDisconnected;
+	WiFiEventHandler STAGotIP;
 #ifdef MULTI_POINTS_CONNECT
 	Wifilist _accessPoints;
 	int cached_size;
@@ -40,10 +44,15 @@ private:
 #endif // MULTI_POINTS_CONNECT
 	//EntryWiFi _currentEntryWiFi;
 	MyEEPROMStruct * _value;
-	String _hostName;		
+	String _hostName;
+	_Func _onEventConnectSTA;
 public:	
 	WiFiModuleClass(MyEEPROMStruct * value);
 	WiFiModuleClass(char *host);
+	void onStationConnected(const WiFiEventStationModeConnected& evt);
+	void onStationDisconnected(const WiFiEventStationModeDisconnected& evt);
+	void onSTAGotIP(const WiFiEventStationModeGotIP& evt);
+	void onEventConnectSTA(_Func callback){_onEventConnectSTA = callback; };
 #ifdef MULTI_POINTS_CONNECT
 	~WiFiModuleClass() {_accessPoints.clear(); };
 	Wifilist points() {return _accessPoints;};

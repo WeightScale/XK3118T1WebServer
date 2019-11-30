@@ -13,12 +13,14 @@
 
 
 class BatteryClass : public Task {	
+	typedef void(*_Func)(unsigned char);
 protected:
-	bool _isDischarged = false;
+	//bool _isDischarged = false;
 	unsigned int _charge;
 	unsigned int * _max; /*Значение ацп максимального заряд*/
 	unsigned int * _min; /*Значение ацп минимального заряд*/
 	unsigned int _get_adc(byte times = 1);	
+	_Func _onEventDischarged;
 public:
 	//BatteryClass();
 	BatteryClass(unsigned int * min, unsigned int * max);
@@ -32,5 +34,6 @@ public:
 	unsigned int *min(){return _min;};
 	size_t doInfo(JsonObject& json);
 	size_t doData(JsonObject& json);
-	bool isDischarged(){return _isDischarged;};
+	//bool isDischarged(){return _isDischarged;};
+	void onEventDischarged(_Func callback) {_onEventDischarged = callback;};
 };

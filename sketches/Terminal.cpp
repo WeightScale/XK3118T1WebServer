@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <Arduino.h>
 
-
-
 size_t TerminalClass::doData(JsonObject& json ){	
 	char buff[10];
 	formatValue(buff);
