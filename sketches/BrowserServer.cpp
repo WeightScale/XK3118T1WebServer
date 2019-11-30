@@ -62,6 +62,7 @@ void BrowserServerClass::init(){
 			DynamicJsonBuffer jsonBuffer;
 			JsonObject& json = jsonBuffer.createObject();
 			json["cmd"] = "sad";
+			json["str"] = Axes.start();
 			JsonArray& array = json.createNestedArray("a");	
 			for (int i = 0; i < Axes._array.size(); i++) {		
 				array.add(Axes._array[i]);
@@ -332,13 +333,6 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 			}				
 		}else 
 #endif //MULTI_POINTS_CONNECT
-#ifdef SCALES_AXES
-		if (strcmp(command, "gad") == 0) {
-			Board->add(new AxesArrayTaskClass(client));
-			return;
-		}else		  
-#endif // SCALES_AXES
-
 		if (strcmp(command, "wt") == 0){
 			XK3118T1.handlePort();
 			DynamicJsonBuffer jsonBuffer;
@@ -351,12 +345,21 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 					client->text(buffer);
 				}
 			}
-		}else if (strcmp(command, "tp") == 0){
+		}else 
+#ifdef SCALES_AXES
+		if (strcmp(command, "gad") == 0) {
+			Board->add(new AxesArrayTaskClass(client));
+			return;
+		}else 	
+#else
+		if (strcmp(command, "tp") == 0){
 			#if !defined(DEBUG_WEIGHT_RANDOM)  && !defined(DEBUG_WEIGHT_MILLIS)
 				//Board->scales()->zero(Board->memory()->_value->scales_value.zero_man_range);
 				//Scale.zero(CoreMemory.eeprom.scales_value.zero_man_range);
 			#endif 
-		}else if (strcmp(command, "scan") == 0) {
+		}else
+#endif // SCALES_AXES
+		if (strcmp(command, "scan") == 0) {
 			WiFi.scanNetworksAsync(printScanResult, true);
 			return;
 		}else if (strcmp(command, "binfo") == 0){

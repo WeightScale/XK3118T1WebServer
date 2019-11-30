@@ -44,10 +44,6 @@ void KeliXK3118T1Class::handlePort() {
 				_time = millis() + serialPort->getTime();
 				_byte_num = 0;
 				_onEvent(_weight);
-#ifdef SCALES_AXES
-				Axes.handle(_weight);
-#endif // SCALES_AXES
-
 			}else
 				_byte_num++;
 		}else{

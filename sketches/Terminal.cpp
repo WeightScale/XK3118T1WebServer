@@ -12,7 +12,7 @@ size_t TerminalClass::doData(JsonObject& json ){
 	return json.measureLength();
 	
 }
-
+#ifndef SCALES_AXES
 void TerminalClass::detectStable() {	
 	if (_saveWeight.value != _weight) {
 		_saveWeight.stabNum = STABLE_NUM_MAX;
@@ -34,3 +34,5 @@ void TerminalClass::detectStable() {
 	_saveWeight.isSave = true;
 	_saveWeight.time = millis() + 10000;
 }
+#endif // !SCALES_AXES
+

@@ -7,7 +7,7 @@
 SerialPortClass * serialPort;
 
 
-SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(500), _value(value) {
+SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(200), _value(value) {
 	onRun(std::bind(&SerialPortClass::takeWeight, this));
 	_authenticated = false;
 	unsigned int s = _value->speed;
@@ -15,15 +15,19 @@ SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSeria
 #ifndef ESP8266_USE_GDB_STUB
 	//end();
 	begin(p);
-	setTimeout(50);
+	//setTimeout(50);
 #endif
-	XK3118T1.onEvent([](float data) {		
-		XK3118T1.detectStable();
+	XK3118T1.onEvent([](float data) {
+		#ifdef SCALES_AXES
+			Axes.handle(data);
+			XK3118T1.setStableNum(Axes.stab());
+		#else
+			XK3118T1.detectStable();
+		#endif // SCALES_AXES
 	});
 #ifdef SCALES_AXES
-	Axes.begin(50);
+	Axes.begin(_value->startDetermine);
 #endif // SCALES_AXES
-
 }
 
 bool SerialPortClass::canHandle(AsyncWebServerRequest *request) {	
@@ -46,10 +50,13 @@ void SerialPortClass::handleRequest(AsyncWebServerRequest *request) {
 		  // Save Settings
 		if(request->hasArg("spd")) {			
 			_value->speed = request->arg("spd").toInt();
-			_value->accuracy = request->arg("acr").toInt();
+			//_value->accuracy = request->arg("acr").toInt();
 			_value->time = request->arg("tme").toInt();
+			_value->startDetermine = request->arg("sdt").toInt();
+#ifndef DEBUG_GDB
 			flush();
-			begin(_value->speed);
+			begin(_value->speed);	  
+#endif // !DEBUG_GDB
 		}
 		if (request->hasArg("user")) {
 			request->arg("user").toCharArray(_value->user, request->arg("user").length() + 1);
@@ -79,9 +86,10 @@ void SerialPortClass::handleValue(AsyncWebServerRequest * request) {
 	AsyncResponseStream *response = request->beginResponseStream(F("application/json"));
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject &root = jsonBuffer.createObject();
-	root["tm_id"] = _value->time;
-	root["ac_id"] = _value->accuracy;
 	root["sp_id"] = _value->speed;
+	//root["ac_id"] = _value->accuracy;
+	root["tm_id"] = _value->time;
+	root["sdt_id"] = _value->startDetermine;
 	root["us_id"] = _value->user;
 	root["ps_id"] = _value->password;
 	root.printTo(*response);
@@ -92,13 +100,16 @@ void SerialPortClass::takeWeight() {
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& json = jsonBuffer.createObject();
 	String str = String();
+#ifndef SCALES_AXES
 	if (XK3118T1.isSave()) {
 		XK3118T1.setIsSave(false);
 		json["cmd"] = "swt";
 		json["d"] = "";
 		json["v"] = String(XK3118T1.get_save_value());		
 	}
-	else {		
+	else
+#endif // !SCALES_AXES
+	{		
 		json["cmd"] = "wt";
 		XK3118T1.doData(json);
 		Board->battery()->doData(json);

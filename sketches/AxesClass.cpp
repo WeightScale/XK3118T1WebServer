@@ -9,19 +9,20 @@ void /*ICACHE_RAM_ATTR*/ AxesArrayTaskClass::run() {
 }
 
 void AxesClass::handle(float weight) {
+	if (_past == weight) {
+		if (_stab > 0)
+			_stab--;
+	}else {
+		_stab = STABLE_MEASURE;   
+		_past = weight;
+	}
 	if (fabs(weight) > _levelDeterminer) {
 		if (!_start) {
 			_start = true;
 			_array.clear();
-			doClear();
+			doStartDeterminer();
 		}
-		if (_past == weight) {
-			if (_stab > 0)
-				_stab--;
-		}else {
-			_stab = 20;   
-			_past = weight;
-		}
+		
 		if (_stab > 0) {	
 			_array.push_back(weight);						
 			/* Посылаем данные для подписчиков  */
@@ -30,19 +31,20 @@ void AxesClass::handle(float weight) {
 		}	
 	}else if (fabs(weight) < _levelDeterminer) {
 		if (_start){
-			Board->add(new Task([]() {
-				/*AxesWeighing AxesWeighing = Axes.determineAxes(Axes._array);
+			Axes.doEndDeterminer();
+			/*Board->add(new Task([]() {				
+				AxesWeighing AxesWeighing = Axes.determineAxes(Axes._array);
 				DynamicJsonBuffer jsonBuffer;
 				JsonObject& json = jsonBuffer.createObject();
 				json["cmd"] = "res";
 				json["d"] = AxesWeighing.totalWeight();
-				Axes.sendSocket(json);*/
-			},100,true));
+				Axes.sendSocket(json);
+			},100,true));*/
 			_start = false;
 		}
 	}
 };
-
+//* Посылаем значение измерения */
 void AxesClass::doPoint(float weight) {
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& json = jsonBuffer.createObject();
@@ -69,13 +71,22 @@ void AxesClass::doArray(AsyncWebSocketClient * client) {
 		client->text(str);
 	//}
 };
-
-void AxesClass::doClear() {
+/* Посылаем команду старт определения осей */
+void AxesClass::doStartDeterminer() {
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& json = jsonBuffer.createObject();
-	json["cmd"] = "ccd";
+	json["cmd"] = "std";
+	json["a"] = XK3118T1.getPoint();	/* точность после запятой */
 	sendSocket(json);	
 };
+/* Посылаем команду стоп определения осей */
+void AxesClass::doEndDeterminer() {
+	DynamicJsonBuffer jsonBuffer;
+	JsonObject& json = jsonBuffer.createObject();
+	json["cmd"] = "ecd";
+	sendSocket(json);	
+}
+;
 
 void AxesClass::sendSocket(JsonObject& json) {
 	String str = String();

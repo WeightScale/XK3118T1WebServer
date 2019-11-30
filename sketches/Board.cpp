@@ -108,9 +108,10 @@ bool BoardClass::doDefault() {
 	_eeprom.net.deltaRSSI = 20;
 	_eeprom.net.enable_scan = true;
 #endif // MULTI_POINTS_CONNECT
-	_eeprom.port.accuracy = 0;
+	//_eeprom.port.accuracy = 0;
 	_eeprom.port.speed = 9600;
 	_eeprom.port.time = 4000;
+	_eeprom.port.startDetermine = 200;
 	u.toCharArray(_eeprom.port.user, u.length() + 1);
 	p.toCharArray(_eeprom.port.password, p.length() + 1);
 	return _memory->save();

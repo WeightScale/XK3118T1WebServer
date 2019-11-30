@@ -38,7 +38,9 @@ class TerminalClass {
 		virtual void formatValue(char* string){dtostrf(_weight, 6 - _point, _point, string); };
 		virtual String timeCheck(char * b){return _time < millis()? String("no data"):String(b);}; // проверка данных на время если нет новых данных в течении 4 сек			
 		float getWeight(){return _weight;};
-		void detectStable();
+#ifndef SCALES_AXES
+		void detectStable();	  
+#endif // !SCALES_AXES
 		bool isSave() {return _saveWeight.isSave;};
 		void setIsSave(bool s) {_saveWeight.isSave = s;};
 		float get_save_value() {
@@ -46,6 +48,7 @@ class TerminalClass {
 		};
 		void onEvent(TerminalEventFunc callback){_onEvent = callback; };
 		int getPoint() {return _point;};
+		void setStableNum(int stab) {_saveWeight.stabNum = stab;};
 };
 
 //extern TerminalClass *Terminal;

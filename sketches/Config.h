@@ -8,16 +8,23 @@
 //#define WEB_CRANE				"web_crane_"	
 #define SCALE_SERVER			"scale_server_"
 
-//#define POWER_DEBUG
+
 //#define DEBUG_SERIAL
+//#define DEBUG_GDB
 #define HTML_PROGMEM			//Использовать веб страницы из flash памяти
 #define MULTI_POINTS_CONNECT	/* Использовать для использования с несколькими точками доступа */
-//#define ESP8266_USE_GDB_STUB    //Comment out the definition below if you don't want to use the ESP8266 gdb stub.
+
 
 #ifdef DEBUG_SERIAL
+#define POWER_DEBUG
+#define DEBUG_BATTERY		/*Для теста*/
 #ifdef DEBUG_ESP_PORT
 #define DEBUG_BOARD(...) DEBUG_ESP_PORT.printf( __VA_ARGS__ )
 #endif
+#elif defined(DEBUG_GDB)
+#define POWER_DEBUG
+#define DEBUG_BATTERY		/*Для теста*/
+#define ESP8266_USE_GDB_STUB    //Comment out the definition below if you don't want to use the ESP8266 gdb stub.
 #endif
 
 #ifndef DEBUG_BOARD
@@ -54,7 +61,7 @@
 	#define SPIFFS_VERSION			SKETCH_VERSION
 #elif defined(SCALE_SERVER)
 	#include "scale_server.h"
-	#define SCALES_AXES
+	#define SCALES_AXES				/* Поосное взвешивание */
 	#define INTERNAL_POWER
 	#define PLATE					SCALE_SERVER
 	#define NUM_VRS					"012b"
@@ -98,9 +105,10 @@ typedef struct{
 }net_t;
 
 typedef struct {
-	unsigned int time;
 	unsigned long speed;
-	int accuracy;
+	unsigned int time;
+	//int accuracy;
+	unsigned int startDetermine;
 	char user[16];
 	char password[16];
 } serial_port_t;

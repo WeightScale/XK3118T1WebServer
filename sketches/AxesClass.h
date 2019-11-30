@@ -1,16 +1,18 @@
 #pragma once
 #include <Arduino.h>
 #include <vector>
-#include <sstream>
-#include <cmath>
-#include <limits>
-#include <algorithm>
+//#include <sstream>
+//#include <cmath>
+//#include <limits>
+//#include <algorithm>
 #include "ArduinoJson.h"
 #include <ESPAsyncWebServer.h>
 #include "Task.h"
 #include "Config.h"
 
 using namespace std;
+
+#define STABLE_MEASURE		20
 
 class AxesArrayTaskClass : public Task {
 protected:
@@ -21,6 +23,37 @@ public:
 		, _client(client) {};
 	~AxesArrayTaskClass() {};
 	virtual void run() override final;
+};
+
+class AxesClass {
+private:
+	AsyncWebSocket* _socket;
+	bool _start = false;
+	float _past;
+	unsigned int _stab;
+#ifdef DEBUG_SERIAL
+public:
+	std::vector<double> _array;
+#else
+public:
+	std::vector<double> _array;
+#endif // DEBUG_SERIAL
+	float _levelDeterminer; 
+public:
+	AxesClass(AsyncWebSocket* socket)	: _socket(socket) {};
+	~AxesClass() {};
+	void begin(float level) {
+		_levelDeterminer = level;
+	};
+	void handle(float weight);
+	float getLevelDeterminer() {return _levelDeterminer;};
+	void doPoint(float weight);
+	void doArray(AsyncWebSocketClient* client);
+	void doStartDeterminer();
+	void doEndDeterminer();
+	void sendSocket(JsonObject& json);
+	bool start() {return _start;};
+	unsigned int stab() {return _stab;};
 };
 
 /** Не удалось определить оси */
@@ -98,37 +131,5 @@ public:
 		return _axes;
 	}
 };*/
-
-class AxesClass{
-private:
-	AsyncWebSocket* _socket;
-	bool _start = false;
-	float _past;
-	unsigned int _stab;
-#ifdef DEBUG_SERIAL
-public:
-	std::vector<double> _array;
-#else
-public:
-	std::vector<double> _array;
-#endif // DEBUG_SERIAL
-	float _levelDeterminer; 
-public:
-	AxesClass(AsyncWebSocket* socket) : _socket(socket) {};
-	~AxesClass(){};
-	void begin(float level) {
-		_levelDeterminer = level;
-	};
-	void handle(float weight);
-	float getLevelDeterminer() {return _levelDeterminer;};
-	void doPoint(float weight);
-	void doArray(AsyncWebSocketClient* client);
-	void doClear();
-	void sendSocket(JsonObject& json);
-	/*vector<double> computeJumps(vector<double>& levels);
-	double computeDeviation(AxesWeighingType axesWeighingType, vector<double>& levels);
-	vector<double> computeNormedLevels(AxesWeighingType axesWeighingType, vector<int> levelBegins, vector<int> levelEnds, vector<double> levels);
-	AxesWeighing determineAxes(vector<double>& weights);*/
-};
 
 extern AxesClass Axes;
