@@ -53,5 +53,6 @@ void KeliXK3118T1Class::handlePort() {
 				//_point = 0;
 			}			
 		}	
+		yield();
 	}
 };

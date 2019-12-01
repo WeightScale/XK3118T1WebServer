@@ -347,10 +347,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 			}
 		}else 
 #ifdef SCALES_AXES
-		if (strcmp(command, "gad") == 0) {
+		/*if (strcmp(command, "gad") == 0) {
 			Board->add(new AxesArrayTaskClass(client));
 			return;
-		}else 	
+		}else */	
 #else
 		if (strcmp(command, "tp") == 0){
 			#if !defined(DEBUG_WEIGHT_RANDOM)  && !defined(DEBUG_WEIGHT_MILLIS)

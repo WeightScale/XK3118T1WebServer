@@ -112,7 +112,7 @@ void SerialPortClass::takeWeight() {
 	{		
 		json["cmd"] = "wt";
 		XK3118T1.doData(json);
-		Board->battery()->doData(json);
+		//Board->battery()->doData(json);
 	}
 	json["a"] = XK3118T1.getPoint();
 	json.printTo(str);

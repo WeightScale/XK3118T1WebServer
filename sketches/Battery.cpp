@@ -15,16 +15,12 @@ unsigned int BatteryClass::fetchCharge() {
 	_charge = _get_adc(1);
 	_charge = constrain(_charge, *_min, *_max);
 	_charge = map(_charge, *_min, *_max, 0, 100);
-	//_isDischarged = _charge <= 5;
 	if (_charge <= 5){
-		_onEventDischarged(_charge);	
+		if(_onEventDischarged)
+			_onEventDischarged(_charge);	
 	}
-	/*if (_isDischarged) {
-		webSocket.textAll("{\"cmd\":\"dchg\"}");
-		String msg = "Батарея разряжена ";
-		msg += String(_charge) + "%";
-		Board->add(new EventTaskClass(LOG,  msg ));
-	}*/
+	if (_onEvent)
+		_onEvent(_charge);
 #else
 	_charge = 51;
 #endif // !DEBUG_BATTERY	
@@ -53,6 +49,7 @@ size_t BatteryClass::doInfo(JsonObject& json) {
 }
 
 size_t BatteryClass::doData(JsonObject& json) {
+	json["cmd"] = "btr";
 	json["c"] = _charge;
 	return json.measureLength();
 };

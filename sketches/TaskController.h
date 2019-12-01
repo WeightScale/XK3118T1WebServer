@@ -2,7 +2,7 @@
 #include "Task.h"
 #include <StringArray.h>
 
-#define MAX_TASKS		10
+#define MAX_TASKS		20
 
 class TaskController: public Task{
 	protected:

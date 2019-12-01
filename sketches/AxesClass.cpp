@@ -4,8 +4,12 @@
 
 AxesClass Axes(&webSocket);
 
-void /*ICACHE_RAM_ATTR*/ AxesArrayTaskClass::run() {
+/*void AxesArrayTaskClass::run() {
 	Axes.doArray(_client);
+}*/
+
+void AxesPointTaskClass::run() {
+	Axes.doPoint(_weight);
 }
 
 void AxesClass::handle(float weight) {
@@ -25,21 +29,14 @@ void AxesClass::handle(float weight) {
 		
 		if (_stab > 0) {	
 			_array.push_back(weight);						
-			/* Посылаем данные для подписчиков  */
-			//EventBus.getDefault().post(new DynamicToChart<>(number));
-			doPoint(weight);
+			/* Посылаем данные для клиентов */		
+			Board->add(new AxesPointTaskClass(weight));
 		}	
 	}else if (fabs(weight) < _levelDeterminer) {
 		if (_start){
-			Axes.doEndDeterminer();
-			/*Board->add(new Task([]() {				
-				AxesWeighing AxesWeighing = Axes.determineAxes(Axes._array);
-				DynamicJsonBuffer jsonBuffer;
-				JsonObject& json = jsonBuffer.createObject();
-				json["cmd"] = "res";
-				json["d"] = AxesWeighing.totalWeight();
-				Axes.sendSocket(json);
-			},100,true));*/
+			Board->add(new Task([]() {
+				Axes.doEndDeterminer();
+			},500,true));
 			_start = false;
 		}
 	}
@@ -53,7 +50,7 @@ void AxesClass::doPoint(float weight) {
 	sendSocket(json);
 };
 
-void AxesClass::doArray(AsyncWebSocketClient * client) {
+/*void AxesClass::doArray(AsyncWebSocketClient * client) {
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& json = jsonBuffer.createObject();
 	json["cmd"] = "sad";
@@ -70,7 +67,8 @@ void AxesClass::doArray(AsyncWebSocketClient * client) {
 		//webSocket.textAll(str);
 		client->text(str);
 	//}
-};
+};*/
+
 /* Посылаем команду старт определения осей */
 void AxesClass::doStartDeterminer() {
 	DynamicJsonBuffer jsonBuffer;

@@ -14,7 +14,7 @@ using namespace std;
 
 #define STABLE_MEASURE		20
 
-class AxesArrayTaskClass : public Task {
+/*class AxesArrayTaskClass : public Task {
 protected:
 	AsyncWebSocketClient * _client;
 public:
@@ -22,6 +22,15 @@ public:
 		: Task(0, true)
 		, _client(client) {};
 	~AxesArrayTaskClass() {};
+	virtual void run() override final;
+};*/
+
+class AxesPointTaskClass : public Task {
+protected:
+	float _weight;
+public:
+	AxesPointTaskClass(float weight) : Task(5, true), _weight(weight) {};
+	~AxesPointTaskClass() {};
 	virtual void run() override final;
 };
 
@@ -48,7 +57,7 @@ public:
 	void handle(float weight);
 	float getLevelDeterminer() {return _levelDeterminer;};
 	void doPoint(float weight);
-	void doArray(AsyncWebSocketClient* client);
+	//void doArray(AsyncWebSocketClient* client);
 	void doStartDeterminer();
 	void doEndDeterminer();
 	void sendSocket(JsonObject& json);

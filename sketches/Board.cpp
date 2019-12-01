@@ -43,12 +43,22 @@ void BoardClass::init() {
 	add(_battery);
 	add(_wifi);
 	add(serialPort);
+	/* События для отправки сообщения о разряде батареи */
 	_battery->onEventDischarged([](unsigned char charge) {
 		webSocket.textAll("{\"cmd\":\"dchg\"}");
 		String msg = "Батарея разряжена ";
 		msg += String(charge) + "%";
 		Board->add(new EventTaskClass(LOG, msg));
 		Board->add(new Task(shutDown, 120000));
+	});
+	/* События для отправки значения заряда */
+	_battery->onEvent([](unsigned char charge) {
+		DynamicJsonBuffer jsonBuffer;
+		JsonObject& json = jsonBuffer.createObject();
+		String str = String();
+		Board->battery()->doData(json);
+		json.printTo(str) ;
+		webSocket.textAll(str) ;
 	});
 	_battery->fetchCharge();
 	/*if (_battery->isDischarged()) {

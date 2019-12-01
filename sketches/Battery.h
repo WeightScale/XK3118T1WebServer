@@ -20,6 +20,7 @@ protected:
 	unsigned int * _min; /*Значение ацп минимального заряд*/
 	unsigned int _get_adc(byte times = 1);	
 	_Func _onEventDischarged;
+	_Func _onEvent;
 public:
 	//BatteryClass();
 	BatteryClass(unsigned int * min, unsigned int * max);
@@ -35,4 +36,5 @@ public:
 	size_t doData(JsonObject& json);
 	//bool isDischarged(){return _isDischarged;};
 	void onEventDischarged(_Func callback) {_onEventDischarged = callback;};
+	void onEvent(_Func callback) {_onEvent = callback; };
 };
