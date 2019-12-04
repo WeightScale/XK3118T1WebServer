@@ -20,7 +20,7 @@ void AxesClass::handle(float weight) {
 		_stab = STABLE_MEASURE;   
 		_past = weight;
 	}
-	if (fabs(weight) > _levelDeterminer) {
+	if (fabs(weight) > *_levelDeterminer) {
 		if (!_start) {
 			_start = true;
 			_array.clear();
@@ -32,7 +32,7 @@ void AxesClass::handle(float weight) {
 			/* Посылаем данные для клиентов */		
 			Board->add(new AxesPointTaskClass(weight));
 		}	
-	}else if (fabs(weight) < _levelDeterminer) {
+	}else if (fabs(weight) < *_levelDeterminer) {
 		if (_start){
 			Board->add(new Task([]() {
 				Axes.doEndDeterminer();

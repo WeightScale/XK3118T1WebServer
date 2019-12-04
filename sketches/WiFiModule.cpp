@@ -19,6 +19,9 @@ WiFiModuleClass::WiFiModuleClass(MyEEPROMStruct * value) : _value(value),
 	WiFi.persistent(false);
 	WiFi.setAutoConnect(false);
 	WiFi.setAutoReconnect(false);
+	STAGotIP = WiFi.onStationModeGotIP(std::bind(&WiFiModuleClass::onSTAGotIP, this, std::placeholders::_1));	
+	stationDisconnected = WiFi.onStationModeDisconnected(std::bind(&WiFiModuleClass::onStationDisconnected, this, std::placeholders::_1));
+	stationConnected = WiFi.onStationModeConnected(std::bind(&WiFiModuleClass::onStationConnected, this, std::placeholders::_1));
 	WiFi.setPhyMode(WIFI_PHY_MODE_11G);	
 	WiFi.mode(WIFI_AP_STA);		
 #ifdef MULTI_POINTS_CONNECT
@@ -40,10 +43,7 @@ WiFiModuleClass::WiFiModuleClass(MyEEPROMStruct * value) : _value(value),
 	WiFi.softAPConfig(apIP, apIP, netMsk);
 	WiFi.softAP(_value->settings.hostName, SOFT_AP_PASSWORD);	
 	_hostName.toLowerCase();
-	WiFi.hostname(_hostName);
-	STAGotIP = WiFi.onStationModeGotIP(std::bind(&WiFiModuleClass::onSTAGotIP, this, std::placeholders::_1));	
-	stationDisconnected = WiFi.onStationModeDisconnected(std::bind(&WiFiModuleClass::onStationDisconnected, this, std::placeholders::_1));
-	stationConnected = WiFi.onStationModeConnected(std::bind(&WiFiModuleClass::onStationConnected, this, std::placeholders::_1));
+	WiFi.hostname(_hostName);	
 };
 
 /**/void /*ICACHE_RAM_ATTR*/ WiFiModuleClass::connect() {	

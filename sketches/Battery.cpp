@@ -18,12 +18,12 @@ unsigned int BatteryClass::fetchCharge() {
 	if (_charge <= 5){
 		if(_onEventDischarged)
 			_onEventDischarged(_charge);	
-	}
-	if (_onEvent)
-		_onEvent(_charge);
+	}	
 #else
 	_charge = 51;
 #endif // !DEBUG_BATTERY	
+	if (_onEvent)
+		_onEvent(_charge);
 	return _charge;
 }
 

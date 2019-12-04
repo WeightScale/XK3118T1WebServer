@@ -1,6 +1,7 @@
 #include "Board.h"
 #include "SettingsPage.h"
 #include "MultiPointsPage.h"
+#include "UpdaterHttp.h"
 
 BoardClass * Board;
 
@@ -27,8 +28,16 @@ BoardClass::BoardClass() {
 	}	
 	_battery = new BatteryClass(&_eeprom.settings.bat_min, &_eeprom.settings.bat_max);
 	_wifi = new WiFiModuleClass(&_eeprom);
+	_wifi->onEventConnectSTA([](bool status) {
+		if (status)
+			Board->onSTA();
+		else
+			Board->offSTA();
+	});
+	loadVersionSpiffs();
 	serialPort = new SerialPortClass(UART0, &_eeprom.port);
 	SettingsPage = new SettingsPageClass(&_eeprom.settings);
+	UpdaterHttp = new UpdaterHttpClass("sa", "654321");
 #ifdef MULTI_POINTS_CONNECT
 	MultiPointsPage = new MultiPointsPageClass(&_eeprom.net, _eeprom.settings.user, _eeprom.settings.password);	
 	_wifi->loadPoints();
@@ -39,10 +48,6 @@ void BoardClass::init() {
 #ifdef INTERNAL_POWER
 	_power->begin(&_eeprom.settings.time_off, &_eeprom.settings.power_time_enable);
 #endif
-	add(_blink);
-	add(_battery);
-	add(_wifi);
-	add(serialPort);
 	/* События для отправки сообщения о разряде батареи */
 	_battery->onEventDischarged([](unsigned char charge) {
 		webSocket.textAll("{\"cmd\":\"dchg\"}");
@@ -61,16 +66,10 @@ void BoardClass::init() {
 		webSocket.textAll(str) ;
 	});
 	_battery->fetchCharge();
-	/*if (_battery->isDischarged()) {
-		
-	}*/
-	_wifi->onEventConnectSTA([](bool status) {
-		if (status){
-			Board->onSTA();
-		}else{
-			Board->offSTA();
-		}
-	});
+	add(_blink);
+	add(_battery);
+	add(_wifi);
+	add(serialPort);
 };
 
 void BoardClass::handleBinfo(AsyncWebServerRequest *request) {
@@ -103,6 +102,32 @@ url:
 	request->send(SPIFFS, request->url());
 }
 
+void BoardClass::handleAdmin(AsyncWebServerRequest *request) {	
+	if (!server.checkAdminAuth(request)) {
+		return request->requestAuthentication();
+	}	
+	if (request->args() > 0) {
+		if (request->hasArg("host")) {
+			request->arg("host").toCharArray(_eeprom.admin.hostUrl, request->arg("host").length() + 1);
+			_eeprom.admin.hostPin = request->arg("pin").toInt();
+			goto save;
+		}
+save:
+		if (Board->memory()->save()) {
+			goto url;
+		}
+		return request->send(400);
+	}
+url:	
+	request->send(SPIFFS,request->url(),String(),false,[e = &_eeprom](const String& var)->String {
+			if (var == "srv")
+				return String(e->admin.hostUrl);
+			else if (var == "pin")
+				return String(e->admin.hostPin);
+			return String();
+		});
+}
+
 bool BoardClass::doDefault() {
 	String u = F("admin");
 	String p = F("1234");
@@ -110,7 +135,7 @@ bool BoardClass::doDefault() {
 	u.toCharArray(_eeprom.settings.user, u.length() + 1);
 	p.toCharArray(_eeprom.settings.password, p.length() + 1);
 	apSsid.toCharArray(_eeprom.settings.hostName, apSsid.length() + 1);
-	_eeprom.settings.hostPin = 0;
+	_eeprom.admin.hostPin = 0;
 #ifndef MULTI_POINTS_CONNECT
 	_eeprom.settings.dnip = true;
 #else
@@ -126,6 +151,21 @@ bool BoardClass::doDefault() {
 	p.toCharArray(_eeprom.port.password, p.length() + 1);
 	return _memory->save();
 }
+
+void BoardClass::loadVersionSpiffs() {
+	/* фаил config.json {"vrs":"010"} */
+	File f = SPIFFS.open("/config.json", "r");
+	size_t size = f.size();
+	std::unique_ptr<char[]> buf(new char[size]);
+	f.readBytes(buf.get(), size);
+	f.close();
+	DynamicJsonBuffer jsonBuffer(size);
+	JsonObject &json = jsonBuffer.parseObject(buf.get());
+	if (json.success()) {
+		_versionSpiffs = json["vrs"].as<String>();
+	}
+}
+;
 
 void shutDown() {	
 	Board->power()->off();

@@ -20,7 +20,7 @@ void /*ICACHE_RAM_ATTR*/ EventTaskClass::run() {
 		return;
 	HTTPClient http;
 	String message = "http://";
-	message += Board->memory()->_value->settings.hostUrl;	
+	message += Board->memory()->_value->admin.hostUrl;	
 	message += "/scales.php?hash=" + _hash;
 	http.begin(message);
 	http.setTimeout(5000);

@@ -10,6 +10,8 @@
 #include "SettingsPage.h"
 #include "XK3118T1.h"
 #include "StreamString.h"
+#include "Registration.h"
+#include "UpdaterHttp.h"
 
 IPAddress lanIp;			// Надо сделать настройки ip адреса
 IPAddress gateway;
@@ -34,7 +36,7 @@ void BrowserServerClass::begin(){
 	addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);
 	addHandler(new SPIFFSEditor(_httpAuth.wwwUsername.c_str(), _httpAuth.wwwPassword.c_str()));	
 	addHandler(new UpdaterLocalClass("sa", "654321"));
-	//addHandler(new HttpUpdaterClass("sa", "654321"));
+	addHandler(UpdaterHttp);
 	addHandler(serialPort);
 	addHandler(SettingsPage);
 #ifdef MULTI_POINTS_CONNECT
@@ -62,7 +64,8 @@ void BrowserServerClass::init(){
 			DynamicJsonBuffer jsonBuffer;
 			JsonObject& json = jsonBuffer.createObject();
 			json["cmd"] = "sad";
-			json["str"] = Axes.start();
+			json["p"] = XK3118T1.getPoint(); /* точность после запятой */
+			json["s"] = Axes.start();
 			JsonArray& array = json.createNestedArray("a");	
 			for (int i = 0; i < Axes._array.size(); i++) {		
 				array.add(Axes._array[i]);
@@ -146,6 +149,7 @@ void BrowserServerClass::init(){
 		else
 			request->send(400);
 	});
+	on("/admin.html", HTTP_ANY, std::bind(&BoardClass::handleAdmin, Board, std::placeholders::_1));								/* Для администратора */
 	on("/rssi", handleRSSI);
 	on("/binfo.html", std::bind(&BoardClass::handleBinfo, Board, std::placeholders::_1));
 #ifdef HTML_PROGMEM
@@ -345,7 +349,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 					client->text(buffer);
 				}
 			}
-		}else 
+		}else if (strcmp(command, "btr") == 0) {
+			Board->battery()->fetchCharge();
+			return;
+		}else
 #ifdef SCALES_AXES
 		/*if (strcmp(command, "gad") == 0) {
 			Board->add(new AxesArrayTaskClass(client));
@@ -364,6 +371,30 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 			return;
 		}else if (strcmp(command, "binfo") == 0){
 			Board->battery()->doInfo(json);
+		}else if (strcmp(command, "update") == 0){
+			Board->add(new UpdateTaskClass(root, client));
+			return;
+		}else if (strcmp(command, "check") == 0){
+			if (Board->softConnect()){
+				Board->add(new CheckTaskClass(client));				
+				json["code"] = 200;
+			}else
+				json["code"] = 400;
+		}else if (strcmp(command, "registr") == 0){
+			if (Board->softConnect())
+			{
+				Board->add(new RegistrationTaskClass(root, client));
+				json["code"] = 200;
+			}
+			else
+				json["code"] = 400;
+		}else if (strcmp(command, "comm") == 0){
+			if (Board->softConnect()){
+				Board->add(new CommissioningTaskClass(json, client));
+				json["code"] = 200;
+			}
+			else
+				json["code"] = 400;
 		}else {
 			return;
 		}

@@ -26,7 +26,7 @@ SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSeria
 		#endif // SCALES_AXES
 	});
 #ifdef SCALES_AXES
-	Axes.begin(_value->startDetermine);
+	Axes.begin(&_value->startDetermine);
 #endif // SCALES_AXES
 }
 
@@ -52,7 +52,7 @@ void SerialPortClass::handleRequest(AsyncWebServerRequest *request) {
 			_value->speed = request->arg("spd").toInt();
 			//_value->accuracy = request->arg("acr").toInt();
 			_value->time = request->arg("tme").toInt();
-			_value->startDetermine = request->arg("sdt").toInt();
+			_value->startDetermine = request->arg("sdt").toFloat();			
 #ifndef DEBUG_GDB
 			flush();
 			begin(_value->speed);	  
@@ -97,6 +97,11 @@ void SerialPortClass::handleValue(AsyncWebServerRequest * request) {
 }
 
 void SerialPortClass::takeWeight() {
+	/*static bool formatPoint = false;
+	if (!formatPoint){
+		Axes.levelDeterminer(1 / (pow(10.0, accuracy) / limit));	 
+		formatPoint = true;	
+	}*/
 	DynamicJsonBuffer jsonBuffer;
 	JsonObject& json = jsonBuffer.createObject();
 	String str = String();

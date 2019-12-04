@@ -47,15 +47,16 @@ public:
 public:
 	std::vector<double> _array;
 #endif // DEBUG_SERIAL
-	float _levelDeterminer; 
+	float * _levelDeterminer; 
 public:
 	AxesClass(AsyncWebSocket* socket)	: _socket(socket) {};
 	~AxesClass() {};
-	void begin(float level) {
+	void begin(float* level) {
 		_levelDeterminer = level;
 	};
 	void handle(float weight);
-	float getLevelDeterminer() {return _levelDeterminer;};
+	float* levelDeterminer() {return _levelDeterminer;};
+	void levelDeterminer(float *level) {_levelDeterminer = level; };
 	void doPoint(float weight);
 	//void doArray(AsyncWebSocketClient* client);
 	void doStartDeterminer();

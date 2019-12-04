@@ -90,6 +90,11 @@
 #endif // SCALES_AXES
 
 typedef struct{
+	char hostUrl[0xff];
+	int hostPin;
+}admin_t;
+
+typedef struct{
 #ifdef MULTI_POINTS_CONNECT
 	unsigned int timeScan; 		//Время период сканирования в секундах
 	unsigned char deltaRSSI; 	//Дельта мощности сигнала при проверке в процентах
@@ -108,7 +113,7 @@ typedef struct {
 	unsigned long speed;
 	unsigned int time;
 	//int accuracy;
-	unsigned int startDetermine;
+	float startDetermine;
 	char user[16];
 	char password[16];
 } serial_port_t;
@@ -119,8 +124,6 @@ typedef struct {
 	unsigned int time_off;
 #endif
 	char hostName[16];
-	char hostUrl[0xff];
-	int hostPin;
 	char user[16];
 	char password[16];
 	unsigned int bat_max; /* максимальный заряд батареи */
@@ -131,6 +134,7 @@ struct MyEEPROMStruct {
 	net_t net;
 	settings_t settings;
 	serial_port_t port;
+	admin_t admin;
 };
 
 //#define MAX_CHG 1013//980	//делитель U2=U*(R2/(R1+R2)) 0.25

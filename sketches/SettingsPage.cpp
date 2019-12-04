@@ -25,10 +25,32 @@ auth:
 	return true;
 }
 
+/*String SettingsPageClass::processor(const String& var) {
+	if (var == F("assid"))
+		return String(_value->hostName);
+	else if(var == F("nadmin"))
+		return String(_value->user);
+	else if(var == F("padmin"))
+		return String(_value->password);
+	else if(var == F("local_host"))
+		return WiFi.hostname();
+	else if(var == F("net"))
+		return WiFi.SSID();
+	else if(var == F("sta_ip"))
+		return WiFi.localIP().toString();
+	else if(var == F("ap_ip"))
+		return WiFi.softAPIP().toString();
+	else if(var == F("mac"))
+		return WiFi.macAddress();
+	else if(var == F("vr"))
+		return PRODUCT;
+	return String();
+}*/
+
 void SettingsPageClass::handleRequest(AsyncWebServerRequest *request) {
 	if (request->args() > 0) {
 		String message = " ";
-		if (request->hasArg("host")) {	
+		if (request->hasArg("assid")) {	
 			request->arg("assid").toCharArray(_value->hostName, request->arg("assid").length() + 1);
 			request->arg("nadmin").toCharArray(_value->user, request->arg("nadmin").length() + 1);
 			request->arg("padmin").toCharArray(_value->password, request->arg("padmin").length() + 1);
@@ -42,16 +64,17 @@ void SettingsPageClass::handleRequest(AsyncWebServerRequest *request) {
 	}
 url:
 #ifdef HTML_PROGMEM
+	//request->send_P(200, F("text/html"), settings_html, std::bind(&SettingsPageClass::processor, this, std::placeholders::_1));
 	request->send_P(200, F("text/html"), settings_html);
 #else
 	if (request->url().equalsIgnoreCase("/sn"))
 		request->send_P(200, F("text/html"), netIndex);
 	else
-		request->send(SPIFFS, request->url());
+		request->send(SPIFFS, request->url(),String(),false,std::bind(&SettingsPageClass::processor, this, std::placeholders::_1));
 #endif
 }
 
-void SettingsPageClass::handleValue(AsyncWebServerRequest * request) {
+/**/void SettingsPageClass::handleValue(AsyncWebServerRequest * request) {
 	if (!request->authenticate(_value->user, _value->password)) {
 		if (!server.checkAdminAuth(request)) {
 			return request->requestAuthentication();

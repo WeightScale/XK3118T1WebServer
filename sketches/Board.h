@@ -133,6 +133,7 @@ private:
 	BatteryClass *_battery;
 	BlinkClass *_blink;
 	WiFiModuleClass * _wifi;	
+	String _versionSpiffs = "";
 	MemoryClass<MyEEPROMStruct> *_memory;
 	BrowserServerClass *_server;
 public:
@@ -161,8 +162,11 @@ public:
 	MemoryClass<MyEEPROMStruct> *memory(){return _memory ;};
 	WiFiModuleClass * wifi() {return _wifi;};
 	void handleBinfo(AsyncWebServerRequest *request);
+	void handleAdmin(AsyncWebServerRequest *request);
 	bool saveEvent(const String& event, float value);
 	bool doDefault();
+	void loadVersionSpiffs();
+	String getVersionSpiff() {return _versionSpiffs;};
 #ifdef INTERNAL_POWER
 	PowerClass * power() {return _power;};
 	void powerOff() {
