@@ -77,8 +77,8 @@ void BrowserServerClass::init(){
 			int size_str = (str.length() * sizeof(char))+1;
 			
 			
-			if ((size_str - index) > maxLen) {				
-				size = maxLen;
+			if ((size_str - index) > 1000) {				
+				size = 1000;
 			}else{
 				size = 	size_str - index;
 			}	

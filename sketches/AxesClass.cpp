@@ -27,7 +27,9 @@ void AxesClass::handle(float weight) {
 			doStartDeterminer();
 		}
 		
-		if (_stab > 0) {	
+		if (_stab > 0) {
+			if (_array.size() > MAX_ARRAY)
+				return;
 			_array.push_back(weight);						
 			/* Посылаем данные для клиентов */		
 			Board->add(new AxesPointTaskClass(weight));
