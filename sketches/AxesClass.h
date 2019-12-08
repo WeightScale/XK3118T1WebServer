@@ -13,7 +13,7 @@
 using namespace std;
 
 #define STABLE_MEASURE		20
-#define MAX_ARRAY			1000
+#define MAX_ARRAY			2000
 
 /*class AxesArrayTaskClass : public Task {
 protected:

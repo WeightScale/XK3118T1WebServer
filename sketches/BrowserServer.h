@@ -30,6 +30,7 @@ class BrowserServerClass : public AsyncWebServer{
 		//bool isAuthentified(AsyncWebServerRequest * request);
 		String getName(){ return _httpAuth.wwwUsername;};
 		String getPass(){ return _httpAuth.wwwPassword;};
+		//void getBytes(unsigned char *buf, unsigned int bufsize, unsigned int index) const;
 		void stop(){_server.end();};
 };
 

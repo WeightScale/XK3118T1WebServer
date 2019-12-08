@@ -19,9 +19,10 @@ void setup(){
 	Board->init();
 	server.begin();	
 #ifdef DEBUG_SERIAL
-	int ii = 10;
+		//serialPort->pause();
+	int ii = 1000;
 	for (int i=0; i < ii; i++){
-		Axes._array.push_back(i*100);		
+		Axes._array.push_back(0.123);		
 	}
 #endif // DEBUG_SERIAL
 

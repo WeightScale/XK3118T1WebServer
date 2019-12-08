@@ -7,7 +7,7 @@
 SerialPortClass * serialPort;
 
 
-SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(200), _value(value) {
+SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(100), _value(value) {
 	onRun(std::bind(&SerialPortClass::takeWeight, this));
 	_authenticated = false;
 	unsigned int s = _value->speed;

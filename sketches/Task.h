@@ -63,7 +63,7 @@ public:
 	/// Запуск
 	virtual void run();
 	
-	void resume(){_paused = false; runned();};
+	void resume(){_paused = false; /*runned();*/};
 	void pause(){_paused = true;};
 	void updateCache(){runned();}
 	//bool kill() {return _kill;};

@@ -14,8 +14,9 @@ void AxesPointTaskClass::run() {
 
 void AxesClass::handle(float weight) {
 	if (_past == weight) {
-		if (_stab > 0)
+		if (_stab > 0){
 			_stab--;
+		}
 	}else {
 		_stab = STABLE_MEASURE;   
 		_past = weight;
@@ -25,21 +26,26 @@ void AxesClass::handle(float weight) {
 			_start = true;
 			_array.clear();
 			doStartDeterminer();
+			serialPort->pause();
 		}
 		
-		if (_stab > 0) {
+		if (_stab > 0){
 			if (_array.size() > MAX_ARRAY)
 				return;
 			_array.push_back(weight);						
 			/* Посылаем данные для клиентов */		
 			Board->add(new AxesPointTaskClass(weight));
-		}	
+			serialPort->pause();
+		}else{			
+			serialPort->resume();
+		}
 	}else if (fabs(weight) < *_levelDeterminer) {
 		if (_start){
 			Board->add(new Task([]() {
 				Axes.doEndDeterminer();
 			},500,true));
 			_start = false;
+			serialPort->resume();
 		}
 	}
 };

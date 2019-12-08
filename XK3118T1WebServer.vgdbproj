@@ -39,6 +39,7 @@
         <string>sketches\AxesClass.h</string>
         <string>sketches\Registration.h</string>
         <string>sketches\UpdaterHttp.h</string>
+        <string>sketches\StringStream.h</string>
       </OtherFiles>
     </ProjectModeSettings>
   </Project>

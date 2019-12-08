@@ -70,6 +70,7 @@ void BoardClass::init() {
 	add(_battery);
 	add(_wifi);
 	add(serialPort);
+	//add(new Task([]() { webSocket.cleanupClients(); }, 1000));		/*TODO*/
 };
 
 void BoardClass::handleBinfo(AsyncWebServerRequest *request) {
