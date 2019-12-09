@@ -52,6 +52,7 @@ void SettingsPageClass::handleRequest(AsyncWebServerRequest *request) {
 		String message = " ";
 		if (request->hasArg("assid")) {	
 			request->arg("assid").toCharArray(_value->hostName, request->arg("assid").length() + 1);
+			request->arg("unit").toCharArray(_value->unit, request->arg("unit").length() + 1);
 			request->arg("nadmin").toCharArray(_value->user, request->arg("nadmin").length() + 1);
 			request->arg("padmin").toCharArray(_value->password, request->arg("padmin").length() + 1);
 			
@@ -93,6 +94,7 @@ size_t SettingsPageClass::doSettings(JsonObject &root) {
 	JsonObject& scale = root.createNestedObject(SCALE_JSON);
 
 	scale["id_assid"] = _value->hostName;
+	scale["id_unit"] = _value->unit;
 	scale["id_nadmin"] = _value->user;
 	scale["id_padmin"] = _value->password;
 	

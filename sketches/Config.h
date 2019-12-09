@@ -125,6 +125,7 @@ typedef struct {
 	unsigned int time_off;
 #endif
 	char hostName[16];
+	char unit[5];
 	char user[16];
 	char password[16];
 	unsigned int bat_max; /* максимальный заряд батареи */

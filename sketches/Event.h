@@ -9,13 +9,14 @@
 
 
 typedef enum EventType {
-	CONNECT_STA          = 0,	/* Соединение с STA */
-	STABLE_WEIGHT,				/* Стабильный вес */
-	SEAL_SCALES,				/* Опломбирование весов */
-	CALIBRATE_COF,				/* Калибровочный коэфициент весы откалиброваные */
-	UPDATE_LOCAL,				/* Обновление с помощью файла */
-	UPDATE_GLOBAL,				/* Обновление через интернет на сервере */
-	LOG	
+	EVENT_CONNECT_STA = 0,		/* Соединение с STA */
+	EVENT_STABLE_WEIGHT,		/* Стабильный вес */
+	EVENT_SEAL_SCALES,			/* Опломбирование весов */
+	EVENT_CALIBRATE_COF,		/* Калибровочный коэфициент весы откалиброваные */
+	EVENT_UPDATE_LOCAL,			/* Обновление с помощью файла */
+	EVENT_UPDATE_GLOBAL,		/* Обновление через интернет на сервере */
+	EVENT_LOG,					/* Прочее сообщения */
+	EVENT_WEIGHT_AXES			/* Отчет по осям */
 } EventType_t;
 
 class EventTaskClass : public Task {

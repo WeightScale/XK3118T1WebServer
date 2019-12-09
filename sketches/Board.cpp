@@ -29,9 +29,10 @@ BoardClass::BoardClass() {
 	_battery = new BatteryClass(&_eeprom.settings.bat_min, &_eeprom.settings.bat_max);
 	_wifi = new WiFiModuleClass(&_eeprom);
 	_wifi->onEventConnectSTA([](bool status) {
-		if (status)
+		if (status){
 			Board->onSTA();
-		else
+			Board->add(new EventTaskClass(EVENT_CONNECT_STA, WiFi.localIP().toString()));
+		}else
 			Board->offSTA();
 	});
 	loadVersionSpiffs();
@@ -53,7 +54,7 @@ void BoardClass::init() {
 		webSocket.textAll("{\"cmd\":\"dchg\"}");
 		String msg = "Батарея разряжена ";
 		msg += String(charge) + "%";
-		Board->add(new EventTaskClass(LOG, msg));
+		Board->add(new EventTaskClass(EVENT_LOG, msg));
 		Board->add(new Task(shutDown, 120000));
 	});
 	/* События для отправки значения заряда */

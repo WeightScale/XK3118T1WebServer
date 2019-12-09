@@ -343,7 +343,7 @@ void handleRSSI(AsyncWebServerRequest * request){
 	request->send(200, F("text/html"), String(WiFi.RSSI()));
 }
 
-void /*ICACHE_FLASH_ATTR*/ printScanResult(int networksFound) {
+void /**/ICACHE_FLASH_ATTR printScanResult(int networksFound) {
 	// sort by RSSI
 	int n = networksFound;
 	int indices[n];
@@ -429,6 +429,8 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 		}else if (strcmp(command, "btr") == 0) {
 			Board->battery()->fetchCharge();
 			return;
+		}else if (strcmp(command, "gu") == 0) {
+			json["u"] = Board->memory()->_value->settings.unit;
 		}else
 #ifdef SCALES_AXES
 		/*if (strcmp(command, "gad") == 0) {

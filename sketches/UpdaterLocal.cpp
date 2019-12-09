@@ -112,7 +112,7 @@ void /*ICACHE_RAM_ATTR*/ UpdaterLocalClass::handleUpload(AsyncWebServerRequest *
 		if(!Update.end(true)){
 			setUpdaterError();
 		}
-		Board->add(new EventTaskClass(UPDATE_LOCAL, filename));
+		Board->add(new EventTaskClass(EVENT_UPDATE_LOCAL, filename));
 	}
 }
 

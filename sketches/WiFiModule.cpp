@@ -263,7 +263,6 @@ void /*ICACHE_RAM_ATTR*/ WiFiModuleClass::onSTAGotIP(const WiFiEventStationModeG
 	WiFi.setAutoReconnect(true);
 	NBNS.begin(WiFi.hostname().c_str());
 	_onEventConnectSTA(true);
-	//onSTA();
 }		
 
 void WiFiModuleClass::onStationConnected(const WiFiEventStationModeConnected& evt) {	
