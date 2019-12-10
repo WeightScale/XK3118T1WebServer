@@ -1,9 +1,8 @@
 ﻿#pragma once
 #include "Config.h"
 #include "Task.h"
+#include <Arduino.h>
 #include <ArduinoJson.h>
-#include <ESPAsyncWebServer.h>
-
 
 #define CONVERT_V_TO_ADC(v)		(((v * (R2_KOM /(R1_KOM + R2_KOM)))*ADC)/VREF)
 #define MAX_CHG					CONVERT_V_TO_ADC(V_BAT_MAX)		/**/

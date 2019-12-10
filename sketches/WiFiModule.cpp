@@ -1,10 +1,5 @@
 #include "WiFiModule.h"
-#include <FS.h>
-#include <ArduinoJson.h>
-#include <limits.h>
-#include <string.h>
 #include "BrowserServer.h"
-#include "Board.h"
 
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);

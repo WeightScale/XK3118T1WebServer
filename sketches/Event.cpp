@@ -1,15 +1,20 @@
 ﻿#include "Event.h"
+#include <ESP8266WiFi.h>
+#include "Board.h"
 #include <ESP8266HTTPClient.h>
 
 EventTaskClass::EventTaskClass(EventType_t type, String value)	: Task(100, true) {
-	_hash = getHash(WiFi.softAPmacAddress(), type, value);	
+	_hash = getHash(WiFi.softAPmacAddress(), type, value);
+	_try = 0;
 };
 EventTaskClass::EventTaskClass(EventType_t type, int value)	: Task(100, true) {
 	_hash = getHash(WiFi.softAPmacAddress(), type, String(value));	
+	_try = 0;
 };
 
 EventTaskClass::EventTaskClass(EventType_t type, float value) : Task(100, true) {
 	_hash = getHash(WiFi.softAPmacAddress(), type, String(value));	
+	_try = 0;
 };
 
 void /*ICACHE_RAM_ATTR*/ EventTaskClass::run() {
@@ -26,6 +31,13 @@ void /*ICACHE_RAM_ATTR*/ EventTaskClass::run() {
 	http.setTimeout(5000);
 	int httpCode = http.GET();
 	http.end();
+	_try++;
+	if (httpCode == HTTP_CODE_OK){
+		single(true);	
+	}else{
+		setInterval(2000);
+		single(_try > TRY_COUNT);		
+	}
 #endif // !SOFT_SET
 };
 

@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include <Arduino.h>
-#include <functional>
 
 class Task{
 	typedef std::function<void(void)> TaskFunction;

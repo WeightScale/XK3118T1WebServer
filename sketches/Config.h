@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "Arduino.h"
 
 #define VERSION(plate,name, num) plate name num
 
@@ -43,63 +42,63 @@
 
 
 #ifdef  WEB_TERMINAL2
-	#include "web_terminal2.h"
-	#define INTERNAL_POWER
-	#define PLAN_BATTERY			BATTERY_4V
-	#define SKETCH_VERSION			"web_terminal2.001"
-	#define SPIFFS_VERSION			SKETCH_VERSION
+#include "web_terminal2.h"
+#define INTERNAL_POWER
+#define PLAN_BATTERY			BATTERY_4V
+#define SKETCH_VERSION			"web_terminal2.001"
+#define SPIFFS_VERSION			SKETCH_VERSION
 #elif defined( WEB_TERMINAL_MINI)
-	#include "web_terminal_mini.h"
-	#define EXTERNAL_POWER
+#include "web_terminal_mini.h"
+#define EXTERNAL_POWER
 	//#define PLAN_BATTERY			BATTERY_6V	
-	#define SKETCH_VERSION			"web_terminal_mini.001"
-	#define SPIFFS_VERSION			SKETCH_VERSION
+#define SKETCH_VERSION			"web_terminal_mini.001"
+#define SPIFFS_VERSION			SKETCH_VERSION
 #elif defined(WEB_CRANE)
-	#include "web_crane.h"
-	#define INTERNAL_POWER
-	#define PLAN_BATTERY			BATTERY_4V
-	#define SKETCH_VERSION			"web_crane.001"
-	#define SPIFFS_VERSION			SKETCH_VERSION
+#include "web_crane.h"
+#define INTERNAL_POWER
+#define PLAN_BATTERY			BATTERY_4V
+#define SKETCH_VERSION			"web_crane.001"
+#define SPIFFS_VERSION			SKETCH_VERSION
 #elif defined(SCALE_SERVER)
-	#include "scale_server.h"
-	#define SCALES_AXES				/* Поосное взвешивание */
-	#define INTERNAL_POWER
-	#define PLATE					SCALE_SERVER
-	#define NUM_VRS					"012b"
-	#ifdef SOFT_SET
-		#ifdef ZERO_SET
-			#define NAME			"soft_8266_4m_z."
-		#else
-			#define NAME			"soft_8266_4m."
-		#endif // ZERO_SET
-	#else
-		#ifdef ZERO_SET
-			#define NAME			"8266_4m_z."
-		#else			
-			#define NAME			"8266_4m."			
-		#endif // ZERO_SET
-	#endif // SOFT_SET
+#include "scale_server.h"
+#define SCALES_AXES				/* Поосное взвешивание */
+#define INTERNAL_POWER
+#define PLATE					SCALE_SERVER
+#define NUM_VRS					"012b"
+#ifdef SOFT_SET
+#ifdef ZERO_SET
+#define NAME			"soft_8266_4m_z."
+#else
+#define NAME			"soft_8266_4m."
+#endif // ZERO_SET
+#else
+#ifdef ZERO_SET
+#define NAME			"8266_4m_z."
+#else			
+#define NAME			"8266_4m."			
+#endif // ZERO_SET
+#endif // SOFT_SET
 #endif //SCALE_SERVER
 
 #define PRODUCT				VERSION(PLATE, NAME, NUM_VRS)
 
 #ifdef HTML_PROGMEM
-	#include "Page.h"
+#include "Page.h"
 #endif
 #ifdef SCALES_AXES
-	#include "AxesClass.h"
+#include "AxesClass.h"
 #endif // SCALES_AXES
 
-typedef struct{
+typedef struct {
 	char hostUrl[0xff];
 	int hostPin;
 }admin_t;
 
-typedef struct{
+typedef struct {
 #ifdef MULTI_POINTS_CONNECT
-	unsigned int timeScan; 		//Время период сканирования в секундах
-	unsigned char deltaRSSI; 	//Дельта мощности сигнала при проверке в процентах
-	bool enable_scan;			//Использовать сканирование лучшей сети из списка
+	unsigned int timeScan;  		//Время период сканирования в секундах
+	unsigned char deltaRSSI;  	//Дельта мощности сигнала при проверке в процентах
+	bool enable_scan; 			//Использовать сканирование лучшей сети из списка
 #else
 	bool dnip;	
 	char lanIp[16];
@@ -152,26 +151,18 @@ struct MyEEPROMStruct {
 
 /* для удаленного обновления
 Формат файла
-
 [имя].[версия].[тип].[расширение]
-
-
 имя			- имя файла или мак адресс
 версия		- версия программы число
 тип			- тип файла ino или spiff
 расширение	- bin
-
 пример: weight_scale.001.spiff.bin
-
 алгоритм проверки приблизительно такой
-
 делаем split
 если не bin false
 если тип spiff или ino выбираем соответствуюшую папку типа spiffs sketch 
 в папке ищем папку по имени и проверяем версию
-
 хидеры которые отправляет код
-
     http.useHTTP10(true);
     http.setTimeout(8000);
     http.setUserAgent(F("ESP8266-http-Update"));
@@ -182,21 +173,16 @@ struct MyEEPROMStruct {
     http.addHeader(F("x-ESP8266-sketch-md5"), String(ESP.getSketchMD5()));
     http.addHeader(F("x-ESP8266-chip-size"), String(ESP.getFlashChipRealSize()));
     http.addHeader(F("x-ESP8266-sdk-version"), ESP.getSdkVersion());
-
     if(spiffs) {
 	    http.addHeader(F("x-ESP8266-mode"), F("spiffs"));
 	    } else {
 	    http.addHeader(F("x-ESP8266-mode"), F("sketch"));
     }
-
     if(currentVersion && currentVersion[0] != 0x00) {
 	    http.addHeader(F("x-ESP8266-version"), currentVersion);
     }
-
     const char * headerkeys[] = { "x-MD5" };
     size_t headerkeyssize = sizeof(headerkeys) / sizeof(char*);
-
     // track these headers
     http.collectHeaders(headerkeys, headerkeyssize);
-
 */

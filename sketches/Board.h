@@ -1,14 +1,12 @@
 ﻿#pragma once
 #include <FS.h>
-#include "TaskController.h"
-#include "Config.h"
-#include <functional>
 #include <ESP_EEPROM.h>
-#include "BrowserServer.h"
-#include "WiFiModule.h"
-#include "SerialPort.h"
+#include "Config.h"
+#include "Task.h"
+#include "TaskController.h"
 #include "Battery.h"
-#include "Event.h"
+#include "WiFiModule.h"
+#include "BrowserServer.h"
 #include "XK3118T1.h"
 
 #define SCALE_JSON		"scale"

@@ -1,12 +1,8 @@
 ﻿#pragma once
-#include "Config.h"
-
-#include <Arduino.h>
-#include <ESPAsyncWebServer.h>
-#include <ArduinoJson.h>
 #include "Task.h"
-#include "Board.h"
+#include <Arduino.h>
 
+#define TRY_COUNT 3
 
 typedef enum EventType {
 	EVENT_CONNECT_STA = 0,		/* Соединение с STA */
@@ -21,7 +17,8 @@ typedef enum EventType {
 
 class EventTaskClass : public Task {
 protected:			
-	String _hash;	
+	String _hash;
+	unsigned char _try;
 public:
 	EventTaskClass(EventType_t type, String value);
 	EventTaskClass(EventType_t type, int value);

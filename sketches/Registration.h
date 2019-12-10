@@ -1,9 +1,8 @@
 ﻿#pragma once
-#include "Task.h"
 #include <ESPAsyncWebServer.h>
-#include <ArduinoJson.h>
 #include "Config.h"
-
+#include "Task.h"
+#include <ArduinoJson.h>
 
 #ifdef HTML_PROGMEM
 	#ifndef SOFT_SET

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <Stream.h>
 
 class StringStream : public Stream

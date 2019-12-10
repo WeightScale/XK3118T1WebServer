@@ -40,6 +40,7 @@
         <string>sketches\Registration.h</string>
         <string>sketches\UpdaterHttp.h</string>
         <string>sketches\StringStream.h</string>
+        <string>sketches\TODO.h</string>
       </OtherFiles>
     </ProjectModeSettings>
   </Project>

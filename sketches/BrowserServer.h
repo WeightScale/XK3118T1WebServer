@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <ESPAsyncWebServer.h>
 #include <ESPAsyncDNSServer.h>
-#include <IPAddress.h>
 #include "Config.h"
 
 #define MAX_WEBSOCKET_CLIENT		4

@@ -1,20 +1,15 @@
-//#include <string>
-//#include <iostream>
 #include "BrowserServer.h"
 #include <ESPAsyncWebServer.h>
 #include <SPIFFSEditor.h>
 #include "UpdaterLocal.h"
-#include <functional>
-#include "Board.h"
-#include <AsyncJson.h>
-#include <ArduinoJson.h>
-#include "MultiPointsPage.h"
-#include "SettingsPage.h"
-#include "XK3118T1.h"
-#include "StreamString.h"
-#include "Registration.h"
 #include "UpdaterHttp.h"
-#include "StringStream.h"
+#include "SerialPort.h"
+#include "SettingsPage.h"
+#include "MultiPointsPage.h"
+#include "WiFiModule.h"
+#include "XK3118T1.h"
+#include "Board.h"
+#include "Registration.h"
 
 IPAddress lanIp;			// Надо сделать настройки ip адреса
 IPAddress gateway;
@@ -107,7 +102,9 @@ void BrowserServerClass::init(){
 		request->send(response);*/
 		
 		AsyncWebServerResponse *response = request->beginChunkedResponse("text/plain",[](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {	
-			int size;			
+			//if (Axes._array.size() == 0)
+			//	return 0;
+			int size = 0;
 			/*DynamicJsonBuffer jsonBuffer;
 			JsonObject& json = jsonBuffer.createObject();
 			json["cmd"] = "sad";
@@ -433,10 +430,12 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 			json["u"] = Board->memory()->_value->settings.unit;
 		}else
 #ifdef SCALES_AXES
-		/*if (strcmp(command, "gad") == 0) {
-			Board->add(new AxesArrayTaskClass(client));
+		if (strcmp(command, "ead") == 0) {		/* События данные чека на сервер */
+			String str;
+			json.printTo(str);
+			Board->add(new AxesEventClass(str));
 			return;
-		}else */	
+		}else	
 #else
 		if (strcmp(command, "tp") == 0){
 			#if !defined(DEBUG_WEIGHT_RANDOM)  && !defined(DEBUG_WEIGHT_MILLIS)

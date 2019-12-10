@@ -1,7 +1,9 @@
 #include "Board.h"
+#include "Event.h"
+#include "SerialPort.h"
 #include "SettingsPage.h"
-#include "MultiPointsPage.h"
 #include "UpdaterHttp.h"
+#include "MultiPointsPage.h"
 
 BoardClass * Board;
 

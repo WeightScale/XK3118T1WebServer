@@ -1,6 +1,6 @@
 ﻿#include "SettingsPage.h"
-#include "Board.h"
 #include "BrowserServer.h"
+#include "Board.h"
 
 SettingsPageClass * SettingsPage;
 

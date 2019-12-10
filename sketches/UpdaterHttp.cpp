@@ -1,6 +1,6 @@
 #include "UpdaterHttp.h"
-#include "ArduinoJson.h"
 #include "Board.h"
+#include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 
 UpdaterHttpClass * UpdaterHttp;

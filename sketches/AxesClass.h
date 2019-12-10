@@ -1,14 +1,11 @@
 #pragma once
 #include <Arduino.h>
-#include <vector>
-//#include <sstream>
-//#include <cmath>
-//#include <limits>
-//#include <algorithm>
-#include "ArduinoJson.h"
-#include <ESPAsyncWebServer.h>
 #include "Task.h"
+#include <ESPAsyncWebServer.h>
 #include "Config.h"
+#include <vector>
+#include "ArduinoJson.h"
+#include "Event.h"
 
 using namespace std;
 
@@ -35,16 +32,25 @@ public:
 	virtual void run() override final;
 };
 
+class AxesEventClass : public EventTaskClass{
+private:
+	
+public:
+	AxesEventClass(String value): EventTaskClass(EVENT_WEIGHT_AXES, value) {};
+	~AxesEventClass() {};
+};
+
 class AxesClass {
 private:
 	AsyncWebSocket* _socket;
 	bool _start = false;
 	float _past;
 	unsigned int _stab;
+	bool _event;			/* Если  true то текущее событие было отправлено */
 #ifdef DEBUG_SERIAL
 public:
 	std::vector<double> _array;
-#else
+#else									
 public:
 	std::vector<double> _array;
 #endif // DEBUG_SERIAL
@@ -65,6 +71,8 @@ public:
 	void sendSocket(JsonObject& json);
 	bool start() {return _start;};
 	unsigned int stab() {return _stab;};
+	bool event() {return _event;};
+	void event(bool ev) {_event=ev;};
 };
 
 /** Не удалось определить оси */

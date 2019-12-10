@@ -1,9 +1,8 @@
-
-#ifndef _TERMINAL_h
-#define _TERMINAL_h
+#pragma once
 #include <Arduino.h>
-#include "BrowserServer.h"
-#include "SerialPort.h"
+#include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
+#include "Config.h"
 
 #define TERMINAL_FILE "/terminal.json"
 #define TERMINAL_TERMINAL_JSON "trm"
@@ -52,6 +51,3 @@ class TerminalClass {
 };
 
 //extern TerminalClass *Terminal;
-
-#endif
-

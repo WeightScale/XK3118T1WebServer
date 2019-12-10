@@ -1,5 +1,6 @@
 #include "AxesClass.h"
 #include "BrowserServer.h"
+#include "SerialPort.h"
 #include "Board.h"
 
 AxesClass Axes(&webSocket);
@@ -41,9 +42,7 @@ void AxesClass::handle(float weight) {
 		}
 	}else if (fabs(weight) < *_levelDeterminer) {
 		if (_start){
-			Board->add(new Task([]() {
-				Axes.doEndDeterminer();
-			},500,true));
+			Board->add(new Task([]() {	Axes.doEndDeterminer();	},500,true));
 			_start = false;
 			serialPort->resume();
 		}

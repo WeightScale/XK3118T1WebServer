@@ -1,12 +1,8 @@
 ﻿#pragma once
-
 #include <Arduino.h>
-#include <ArduinoJson.h>
 #include <ESPAsyncWebServer.h>
-#include "Config.h"
-#include "BrowserServer.h"
 #include "Task.h"
-//using namespace ArduinoJson;
+#include "Config.h"
 
 #define PORT_FILE		"/port.json"
 #define PORT_TERMINAL_JSON	"tr_id"

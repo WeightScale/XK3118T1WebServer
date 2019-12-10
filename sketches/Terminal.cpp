@@ -1,8 +1,4 @@
 #include "Terminal.h"
-#include <string>
-#include <cstdlib>
-#include <algorithm>
-#include <Arduino.h>
 
 size_t TerminalClass::doData(JsonObject& json ){	
 	char buff[10];

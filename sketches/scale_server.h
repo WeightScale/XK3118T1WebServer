@@ -1,5 +1,4 @@
 #pragma once
-#include <Arduino.h>
 
 #define GPIO14			14							/* сигнал clock HX711 */
 #define GPIO16			16							/* сигнал дата HX711 */

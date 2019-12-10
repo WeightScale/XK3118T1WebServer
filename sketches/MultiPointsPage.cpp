@@ -1,6 +1,6 @@
 #include "MultiPointsPage.h"
-#include "Board.h"
 #include "BrowserServer.h"
+#include "Board.h"
 
 MultiPointsPageClass * MultiPointsPage;
 

@@ -1,6 +1,4 @@
 ﻿#include "Battery.h"
-#include "BrowserServer.h"
-#include "Board.h"
 
 BatteryClass::BatteryClass(unsigned int *min, unsigned int *max) : Task(20000) {
 	/* 20 Обновляем заряд батареи */

@@ -1,11 +1,7 @@
 #include "UpdaterLocal.h"
-//#include "Scales.h"
 #include "Board.h"
-#include "Config.h"
+#include "Event.h"
 #include "StreamString.h"
-#include <ESP8266httpUpdate.h>
-#include <ESP8266HTTPClient.h>
-//#include "Version.h"
 
 UpdaterLocalClass UpdaterLocal("sa", "654321");
 String updaterError;

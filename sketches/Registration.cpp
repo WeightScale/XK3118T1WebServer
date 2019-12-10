@@ -1,4 +1,5 @@
 ﻿#include "Registration.h"
+#include "BrowserServer.h"
 #include <ESP8266HTTPClient.h>
 #include "Board.h"
 

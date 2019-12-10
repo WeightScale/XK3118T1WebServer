@@ -1,4 +1,5 @@
 #include "XK3118T1.h"
+#include "SerialPort.h"
 
 KeliXK3118T1Class XK3118T1;
 

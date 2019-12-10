@@ -1,11 +1,9 @@
 ﻿#include "SerialPort.h"
-#include "Board.h"
-#include "BrowserServer.h"
 #include "XK3118T1.h"
+#include "BrowserServer.h"
+#include "Board.h"
 
-//SerialPortClass SerialPort(UART0);
 SerialPortClass * serialPort;
-
 
 SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSerial(port), Task(100), _value(value) {
 	onRun(std::bind(&SerialPortClass::takeWeight, this));

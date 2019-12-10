@@ -1,11 +1,8 @@
 ﻿#pragma once
 #include <ESP8266WiFi.h>
-#include <ESP8266NetBIOS.h>
 #include "Task.h"
-#include <functional>
-#include <StringArray.h>
-#include <ArduinoJson.h>
 #include "Config.h"
+#include <ESP8266NetBIOS.h>
 
 #define MAX_POINTS				10
 
