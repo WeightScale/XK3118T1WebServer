@@ -17,15 +17,12 @@ SerialPortClass::SerialPortClass(int port, serial_port_t * value): HardwareSeria
 #endif
 	XK3118T1.onEvent([](float data) {
 		#ifdef SCALES_AXES
-			Axes.handle(data);
-			XK3118T1.setStableNum(Axes.stab());
+			Axes->handle(data);
+			XK3118T1.setStableNum(Axes->stab());
 		#else
 			XK3118T1.detectStable();
 		#endif // SCALES_AXES
 	});
-#ifdef SCALES_AXES
-	Axes.begin(&_value->startDetermine);
-#endif // SCALES_AXES
 }
 
 bool SerialPortClass::canHandle(AsyncWebServerRequest *request) {	

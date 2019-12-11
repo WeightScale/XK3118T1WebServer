@@ -3,14 +3,14 @@
 #include "SerialPort.h"
 #include "Board.h"
 
-AxesClass Axes(&webSocket);
+AxesClass *Axes;
 
 /*void AxesArrayTaskClass::run() {
 	Axes.doArray(_client);
 }*/
 
 void AxesPointTaskClass::run() {
-	Axes.doPoint(_weight);
+	Axes->doPoint(_weight);
 }
 
 void AxesClass::handle(float weight) {
@@ -42,9 +42,10 @@ void AxesClass::handle(float weight) {
 		}
 	}else if (fabs(weight) < *_levelDeterminer) {
 		if (_start){
-			Board->add(new Task([]() {	Axes.doEndDeterminer();	},500,true));
+			Board->add(new Task([]() {	Axes->doEndDeterminer();	},500,true));
 			_start = false;
 			serialPort->resume();
+			*_num_check += 1;
 		}
 	}
 };

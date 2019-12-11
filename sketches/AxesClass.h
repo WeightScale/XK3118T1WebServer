@@ -43,6 +43,7 @@ public:
 class AxesClass {
 private:
 	AsyncWebSocket* _socket;
+	unsigned int *_num_check;
 	bool _start = false;
 	float _past;
 	unsigned int _stab;
@@ -56,7 +57,7 @@ public:
 #endif // DEBUG_SERIAL
 	float * _levelDeterminer; 
 public:
-	AxesClass(AsyncWebSocket* socket)	: _socket(socket) {};
+	AxesClass(AsyncWebSocket* socket, unsigned int *num)	: _socket(socket), _num_check(num) {};
 	~AxesClass() {};
 	void begin(float* level) {
 		_levelDeterminer = level;
@@ -73,6 +74,7 @@ public:
 	unsigned int stab() {return _stab;};
 	bool event() {return _event;};
 	void event(bool ev) {_event=ev;};
+	unsigned int *num() {return _num_check;};
 };
 
 /** Не удалось определить оси */
@@ -151,4 +153,4 @@ public:
 	}
 };*/
 
-extern AxesClass Axes;
+extern AxesClass *Axes;

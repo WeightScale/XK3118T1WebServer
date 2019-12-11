@@ -41,10 +41,10 @@ public:
 #ifdef INTERNAL_POWER
 class PowerClass : public Task {
 private:
-	typedef std::function<void(void)> PowerFunction;
+	typedef std::function<bool(void)> PowerFunction;
 	byte _switch;
 	byte _signal;
-	PowerFunction onCallback;
+	PowerFunction _onCallback;
 	//void(*onCallback)(void);
 	//bool _time_enable = false;
 	//unsigned int _time;
@@ -52,7 +52,7 @@ private:
 public : PowerClass(byte swch, byte button_signal, PowerFunction function)	: Task(2400000)	, _switch(swch)	, _signal(button_signal) {
 		pinMode(_switch, OUTPUT);
 		pinMode(_signal, INPUT);
-		onCallback = function;
+		_onCallback = function;
 		onRun(std::bind(&PowerClass::off, this));
 		//POWER.enabled = _settings->power_time_enable;	
 		//POWER.setInterval(_settings->time_off);
@@ -64,8 +64,8 @@ public : PowerClass(byte swch, byte button_signal, PowerFunction function)	: Tas
 	};
 	void on() {digitalWrite(_switch, HIGH); };
 	void off() {
-		onCallback();
-		digitalWrite(_switch, LOW); 
+		if(_onCallback())
+			digitalWrite(_switch, LOW); 
 	};
 	
 	void powerSwitchInterrupt() {
@@ -169,7 +169,8 @@ public:
 	PowerClass * power() {return _power;};
 	void powerOff() {
 		webSocket.closeAll();
-		server.stop();		
+		server.stop();
+		_memory->save();
 		_memory->close();
 	}
 #endif // INTERNAL_POWER

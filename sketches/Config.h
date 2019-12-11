@@ -9,7 +9,7 @@
 
 
 //#define DEBUG_SERIAL
-//#define DEBUG_GDB
+#define DEBUG_GDB
 //#define POWER_DEBUG
 #define HTML_PROGMEM			//Использовать веб страницы из flash памяти
 #define MULTI_POINTS_CONNECT	/* Использовать для использования с несколькими точками доступа */
@@ -92,6 +92,7 @@
 typedef struct {
 	char hostUrl[0xff];
 	int hostPin;
+	unsigned int numCheck;
 }admin_t;
 
 typedef struct {

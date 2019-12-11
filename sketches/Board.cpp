@@ -11,8 +11,9 @@ BoardClass::BoardClass() {
 	_blink = new BlinkClass();
 #ifdef INTERNAL_POWER
 	//_power = new PowerClass(EN_NCP, PWR_SW, std::bind(&BoardClass::powerOff, this));
-	_power = new PowerClass(EN_NCP, PWR_SW, [](){/* Событие выключения питания */
+	_power = new PowerClass(EN_NCP, PWR_SW, []()->bool{/* Событие выключения питания */
 		Board->powerOff();
+		return true;
 	});	
 	auto startTime = millis();
 	_blink->ledOn();
@@ -45,6 +46,11 @@ BoardClass::BoardClass() {
 	MultiPointsPage = new MultiPointsPageClass(&_eeprom.net, _eeprom.settings.user, _eeprom.settings.password);	
 	_wifi->loadPoints();
 #endif // MULTI_POINTS_CONNECT	
+	
+#ifdef SCALES_AXES
+	Axes = new AxesClass(&webSocket, &_eeprom.admin.numCheck);
+	Axes->begin(&_eeprom.port.startDetermine);
+#endif // SCALES_AXES
 };
 
 void BoardClass::init() {
@@ -114,6 +120,7 @@ void BoardClass::handleAdmin(AsyncWebServerRequest *request) {
 		if (request->hasArg("host")) {
 			request->arg("host").toCharArray(_eeprom.admin.hostUrl, request->arg("host").length() + 1);
 			_eeprom.admin.hostPin = request->arg("pin").toInt();
+			_eeprom.admin.numCheck = request->arg("num").toInt();
 			goto save;
 		}
 save:
@@ -128,6 +135,8 @@ url:
 				return String(e->admin.hostUrl);
 			else if (var == "pin")
 				return String(e->admin.hostPin);
+			else if (var == "num")
+				return String(e->admin.numCheck);
 			return String();
 		});
 }

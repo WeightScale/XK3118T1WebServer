@@ -13,9 +13,6 @@ public:
 	KeliXK3118T1Class(){};
 	~KeliXK3118T1Class(){};
 	void handlePort();	
-	
-	//bool saveValueHttp(AsyncWebServerRequest * request){};
-	//bool downloadValue(int inx){};
 };
 
 extern KeliXK3118T1Class XK3118T1;
