@@ -60,7 +60,7 @@ void BoardClass::init() {
 	/* События для отправки сообщения о разряде батареи */
 	_battery->onEventDischarged([](unsigned char charge) {
 		webSocket.textAll("{\"cmd\":\"dchg\"}");
-		String msg = "Батарея разряжена ";
+		String msg = "Батарея разряжена выключение через 2 мин.";
 		msg += String(charge) + "%";
 		Board->add(new EventTaskClass(EVENT_LOG, msg));
 		Board->add(new Task(shutDown, 120000));

@@ -28,6 +28,7 @@ void AxesClass::handle(float weight) {
 			_array.clear();
 			doStartDeterminer();
 			serialPort->pause();
+			_event = false;
 		}
 		
 		if (_stab > 0){

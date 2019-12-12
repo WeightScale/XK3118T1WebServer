@@ -17,7 +17,7 @@ WiFiModuleClass::WiFiModuleClass(MyEEPROMStruct * value) : _value(value),
 	STAGotIP = WiFi.onStationModeGotIP(std::bind(&WiFiModuleClass::onSTAGotIP, this, std::placeholders::_1));	
 	stationDisconnected = WiFi.onStationModeDisconnected(std::bind(&WiFiModuleClass::onStationDisconnected, this, std::placeholders::_1));
 	stationConnected = WiFi.onStationModeConnected(std::bind(&WiFiModuleClass::onStationConnected, this, std::placeholders::_1));
-	WiFi.setPhyMode(WIFI_PHY_MODE_11G);	
+	//WiFi.setPhyMode(WIFI_PHY_MODE_11G);	
 	WiFi.mode(WIFI_AP_STA);		
 #ifdef MULTI_POINTS_CONNECT
 	onRun(std::bind(&WiFiModuleClass::scan, this));
