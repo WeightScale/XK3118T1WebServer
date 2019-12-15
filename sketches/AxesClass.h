@@ -10,7 +10,7 @@
 using namespace std;
 
 #define STABLE_MEASURE		20
-#define MAX_ARRAY			2000
+#define MAX_ARRAY			1000
 
 /*class AxesArrayTaskClass : public Task {
 protected:
@@ -41,23 +41,26 @@ public:
 };
 
 class AxesClass {
+	typedef void(*_Func)(void);
 private:
-	AsyncWebSocket* _socket;
-	unsigned int *_num_check;
-	bool _start = false;
-	float _past;
-	unsigned int _stab;
-	bool _event;			/* Если  true то текущее событие было отправлено */
+	//AsyncWebSocket &_socket;		/* Указатель на сокет */
+	unsigned int *_num_check;	/* Номер текущего чека */
+	bool _start = false;		/* Флаг начала и конца апроксимации */
+	float _past;				/* Значение предыдущего веса для определения стабилизации */
+	unsigned int _stab;			/* Индикатор стабильного веса при стабилизации идет на уменшение */
+	bool _event;				/* Если  true то текущее событие было отправлено */
+	_Func _onStartDeterminer;	
+	_Func _onStopDeterminer;
 #ifdef DEBUG_SERIAL
 public:
-	std::vector<double> _array;
+	std::vector<float> _array;
 #else									
 public:
-	std::vector<double> _array;
+	std::vector<float> _array;
 #endif // DEBUG_SERIAL
 	float * _levelDeterminer; 
 public:
-	AxesClass(AsyncWebSocket* socket, unsigned int *num)	: _socket(socket), _num_check(num) {};
+	AxesClass( /*AsyncWebSocket &socket,*/ unsigned int *num)	: /*_socket(socket),*/ _num_check(num) {};
 	~AxesClass() {};
 	void begin(float* level) {
 		_levelDeterminer = level;
@@ -65,11 +68,14 @@ public:
 	void handle(float weight);
 	float* levelDeterminer() {return _levelDeterminer;};
 	void levelDeterminer(float *level) {_levelDeterminer = level; };
+	void onStartDeterminer(_Func callback) {_onStartDeterminer = callback; };
+	void onStopDeterminer(_Func callback) {_onStopDeterminer = callback; };
 	void doPoint(float weight);
 	//void doArray(AsyncWebSocketClient* client);
 	void doStartDeterminer();
 	void doEndDeterminer();
 	void sendSocket(JsonObject& json);
+	//std::vector<double> *array() {return &_array;};
 	bool start() {return _start;};
 	unsigned int stab() {return _stab;};
 	bool event() {return _event;};

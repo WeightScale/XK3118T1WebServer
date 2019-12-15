@@ -13,41 +13,47 @@ void AxesPointTaskClass::run() {
 	Axes->doPoint(_weight);
 }
 
-void AxesClass::handle(float weight) {
-	if (_past == weight) {
-		if (_stab > 0){
-			_stab--;
-		}
-	}else {
-		_stab = STABLE_MEASURE;   
-		_past = weight;
-	}
+void AxesClass::handle(float weight) {	
 	if (fabs(weight) > *_levelDeterminer) {
 		if (!_start) {
 			_start = true;
 			_array.clear();
-			doStartDeterminer();
-			serialPort->pause();
+			_array.shrink_to_fit();
+			_onStartDeterminer();
 			_event = false;
 		}
 		
 		if (_stab > 0){
 			if (_array.size() > MAX_ARRAY)
 				return;
-			_array.push_back(weight);						
-			/* Посылаем данные для клиентов */		
-			Board->add(new AxesPointTaskClass(weight));
+			if (_past == weight){
+				_array.push_back(weight);
+				if (_stab > (STABLE_MEASURE-3)){
+					Axes->doPoint(weight); /* Посылаем данные для клиентов */
+				}
+			}/*else{
+				if(webSocket.availableForWriteAll())
+					Axes->doPoint(weight);				/ * Посылаем данные для клиентов * /
+					//Board->add(new AxesPointTaskClass(weight));
+			}*/		
 			serialPort->pause();
 		}else{			
 			serialPort->resume();
 		}
 	}else if (fabs(weight) < *_levelDeterminer) {
 		if (_start){
-			Board->add(new Task([]() {	Axes->doEndDeterminer();	},500,true));
 			_start = false;
-			serialPort->resume();
+			_onStopDeterminer();
 			*_num_check += 1;
 		}
+	}
+	if (_past == weight) {
+		if (_stab > 0) {
+			_stab--;
+		}
+	}else {
+		_stab = STABLE_MEASURE;   
+		_past = weight;
 	}
 };
 //* Посылаем значение измерения */
@@ -98,7 +104,7 @@ void AxesClass::doEndDeterminer() {
 void AxesClass::sendSocket(JsonObject& json) {
 	String str = String();
 	json.printTo(str);	
-	_socket->textAll(str);
+	webSocket.textAll(str);
 };
 
 /*vector<double> AxesClass::computeJumps(vector<double>& levels) {

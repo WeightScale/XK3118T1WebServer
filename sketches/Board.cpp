@@ -48,8 +48,16 @@ BoardClass::BoardClass() {
 #endif // MULTI_POINTS_CONNECT	
 	
 #ifdef SCALES_AXES
-	Axes = new AxesClass(&webSocket, &_eeprom.admin.numCheck);
+	Axes = new AxesClass(/*webSocket,*/ &_eeprom.admin.numCheck);
 	Axes->begin(&_eeprom.port.startDetermine);
+	Axes->onStartDeterminer([]() {
+		Axes->doStartDeterminer();
+		serialPort->pause();	
+	});
+	Axes->onStopDeterminer([]() {
+		Board->add(new Task([]() {	Axes->doEndDeterminer(); }, 100, true));
+		serialPort->resume();
+	});
 #endif // SCALES_AXES
 };
 
@@ -79,7 +87,7 @@ void BoardClass::init() {
 	add(_battery);
 	add(_wifi);
 	add(serialPort);
-	//add(new Task([]() { webSocket.cleanupClients(); }, 1000));		/*TODO*/
+	add(new Task([]() { webSocket.cleanupClients(); }, 1000));		/*TODO*/
 };
 
 void BoardClass::handleBinfo(AsyncWebServerRequest *request) {

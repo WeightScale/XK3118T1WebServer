@@ -35,7 +35,7 @@ void BrowserServerClass::begin(){
 	/* Setup the DNS server redirecting all the domains to the apIP */
 	dnsServer.setTTL(300);
 	dnsServer.setErrorReplyCode(AsyncDNSReplyCode::ServerFailure);
-	webSocket.onEvent(onWsEvent);	
+	webSocket.onEvent(onWsEvent);
 	addHandler(&webSocket);
 	addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER);
 	addHandler(new SPIFFSEditor(_httpAuth.wwwUsername.c_str(), _httpAuth.wwwPassword.c_str()));	
@@ -77,7 +77,7 @@ void BrowserServerClass::init(){
 		request->send(200, "text/json", str);
 	});	
 	on("/geta",HTTP_ANY,[this](AsyncWebServerRequest * request) {
-		AsyncWebServerResponse *response = request->beginChunkedResponse("text/plain",[](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {	
+		AsyncWebServerResponse *response = request->beginChunkedResponse("text/plain",[](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {			
 			if (Axes->_array.size() == 0)
 				return 0;
 			int size = 0;
@@ -85,11 +85,11 @@ void BrowserServerClass::init(){
 			String str = "{\"cmd\":\"sad\",\"p\":" + String(XK3118T1.getPoint());
 			str += ",\"s\":" + String(Axes->start());
 			str += ",\"n\":" + String(*Axes->num());
-			str += ",\"a\":[";
-			for (int i = 0; i < Axes->_array.size(); i++) {		
+			str += ",\"a\":[";			
+			for (int i = 0; i < Axes->_array.size(); i++) {
 				str += String(Axes->_array[i],3) + ",";
 			}
-			if (Axes->_array.size() > 0){
+			if (Axes->_array.size() > 0) {
 				str.remove(str.length()-1);
 			}
 			str += "]}";			

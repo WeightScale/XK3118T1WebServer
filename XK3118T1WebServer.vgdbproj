@@ -228,11 +228,11 @@
             </KeyValue>
             <KeyValue>
               <Key>FlashFreq</Key>
-              <Value>40</Value>
+              <Value>80</Value>
             </KeyValue>
             <KeyValue>
               <Key>FlashMode</Key>
-              <Value>dio</Value>
+              <Value>qio</Value>
             </KeyValue>
             <KeyValue>
               <Key>FlashSize</Key>
