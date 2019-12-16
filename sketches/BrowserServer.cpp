@@ -77,6 +77,8 @@ void BrowserServerClass::init(){
 		request->send(200, "text/json", str);
 	});	
 	on("/geta",HTTP_ANY,[this](AsyncWebServerRequest * request) {
+		if(Axes->event())
+			return request->send(200, "text/json", Axes->check());
 		AsyncWebServerResponse *response = request->beginChunkedResponse("text/plain",[](uint8_t *buffer, size_t maxLen, size_t index) -> size_t {			
 			if (Axes->_array.size() == 0)
 				return 0;
@@ -164,6 +166,7 @@ void BrowserServerClass::init(){
 			request->send(400);
 	});
 	on("/admin.html", HTTP_ANY, std::bind(&BoardClass::handleAdmin, Board, std::placeholders::_1));								/* Для администратора */
+	on("/determ.html", HTTP_ANY, std::bind(&BoardClass::handleCheck, Board, std::placeholders::_1));							/* Расчет или чек */
 	on("/rssi", handleRSSI);
 	on("/binfo.html", std::bind(&BoardClass::handleBinfo, Board, std::placeholders::_1));
 #ifdef HTML_PROGMEM
@@ -334,6 +337,8 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 			return;
 		}
 		const char *command = root["cmd"];			/* Получить показания датчика*/
+		if (!command)
+			return;
 		JsonObject& json = jsonBuffer.createObject();
 		json["cmd"] = command;
 #ifdef MULTI_POINTS_CONNECT
@@ -368,13 +373,16 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 			return;
 		}else if (strcmp(command, "gu") == 0) {
 			json["u"] = Board->memory()->_value->settings.unit;
+			Board->add(new AxesCommandTaskClass(client,Axes->check()));
 		}else
 #ifdef SCALES_AXES
 		if (strcmp(command, "ead") == 0) {		/* События данные чека на сервер */
 			if (!Axes->event()){
 				String str;
+				root["u"] = Board->memory()->_value->settings.unit;
 				root.printTo(str);
 				Board->add(new AxesEventClass(str));
+				Axes->check(str);
 				Axes->event(true);
 			}
 			return;

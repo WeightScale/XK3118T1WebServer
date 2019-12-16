@@ -40,9 +40,22 @@ public:
 	~AxesEventClass() {};
 };
 
+class AxesCommandTaskClass : public Task{
+protected:
+	AsyncWebSocketClient * _client;
+	String _msg;
+public:
+	AxesCommandTaskClass(AsyncWebSocketClient * client, String &msg)	: Task(100, true), _client(client),_msg(msg) {};
+	~AxesCommandTaskClass() {};
+	void run() {
+		_client->text(_msg);
+	};	
+};
+
 class AxesClass {
 	typedef void(*_Func)(void);
 private:
+	String _check;
 	//AsyncWebSocket &_socket;		/* Указатель на сокет */
 	unsigned int *_num_check;	/* Номер текущего чека */
 	bool _start = false;		/* Флаг начала и конца апроксимации */
@@ -81,6 +94,8 @@ public:
 	bool event() {return _event;};
 	void event(bool ev) {_event=ev;};
 	unsigned int *num() {return _num_check;};
+	void check(const String &check) {_check = check;};
+	String &check() {return _check;};
 };
 
 /** Не удалось определить оси */

@@ -161,6 +161,7 @@ public:
 	WiFiModuleClass * wifi() {return _wifi;};
 	void handleBinfo(AsyncWebServerRequest *request);
 	void handleAdmin(AsyncWebServerRequest *request);
+	void handleCheck(AsyncWebServerRequest *request);			/* determ.html or check.html */
 	bool saveEvent(const String& event, float value);
 	bool doDefault();
 	void loadVersionSpiffs();

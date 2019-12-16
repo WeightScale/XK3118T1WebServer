@@ -149,6 +149,14 @@ url:
 		});
 }
 
+void BoardClass::handleCheck(AsyncWebServerRequest *request) {					/* determ.html or check.html */
+	if (Axes->event()){
+		request->send(SPIFFS, "/check.html");	
+	}else{
+		request->send(SPIFFS, request->url());
+	}
+}
+
 bool BoardClass::doDefault() {
 	String u = F("admin");
 	String p = F("1234");
