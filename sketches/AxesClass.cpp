@@ -17,8 +17,7 @@ void AxesClass::handle(float weight) {
 	if (fabs(weight) > *_levelDeterminer) {
 		if (!_start) {
 			_start = true;
-			_array.clear();
-			_array.shrink_to_fit();
+			arrayClear();
 			_onStartDeterminer();
 			_event = false;
 		}

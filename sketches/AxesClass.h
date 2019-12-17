@@ -48,7 +48,8 @@ public:
 	AxesCommandTaskClass(AsyncWebSocketClient * client, String &msg)	: Task(100, true), _client(client),_msg(msg) {};
 	~AxesCommandTaskClass() {};
 	void run() {
-		_client->text(_msg);
+		if (_client)
+			_client->text(_msg);
 	};	
 };
 
@@ -95,6 +96,10 @@ public:
 	void event(bool ev) {_event=ev;};
 	unsigned int *num() {return _num_check;};
 	void check(const String &check) {_check = check;};
+	void arrayClear() {
+		_array.clear();
+		_array.shrink_to_fit();
+	};
 	String &check() {return _check;};
 };
 

@@ -154,6 +154,8 @@ void BrowserServerClass::init(){
 		str += String(ESP.getFreeHeap());
 		str += " client: ";
 		str += String(webSocket.count());
+		str += " tasks: ";
+		str += Board->size(false);	
 		request->send(200, F("text/plain"), str);
 	});
 	on("/rst",HTTP_ANY,[this](AsyncWebServerRequest * request){
@@ -317,9 +319,9 @@ void /**/ICACHE_FLASH_ATTR printScanResult(int networksFound) {
 	WiFi.scanDelete();
 }
 
-void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
+void onWsEvent(AsyncWebSocket * _server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
 	if(type == WS_EVT_CONNECT){	
-		if (server->count() > MAX_WEBSOCKET_CLIENT) {
+		if (_server->count() > MAX_WEBSOCKET_CLIENT) {
 			client->text("{\"cmd\":\"cls\",\"code\":1111}");
 		}
 	}else if(type == WS_EVT_DISCONNECT) {
@@ -382,8 +384,9 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 				root["u"] = Board->memory()->_value->settings.unit;
 				root.printTo(str);
 				Board->add(new AxesEventClass(str));
-				Axes->check(str);
 				Axes->event(true);
+				Axes->check(str);				/* Сохраняем данные после апроксимации можно удалить масив */
+				Axes->arrayClear();				/* Очищаем массив */
 			}
 			return;
 		}else	

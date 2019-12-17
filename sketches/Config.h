@@ -93,6 +93,7 @@ typedef struct {
 	char hostUrl[0xff];
 	int hostPin;
 	unsigned int numCheck;
+	unsigned int countArray;
 }admin_t;
 
 typedef struct {

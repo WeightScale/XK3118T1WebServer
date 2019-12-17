@@ -17,7 +17,7 @@ struct strHTTPAuth{
 class BrowserServerClass : public AsyncWebServer{
 	protected:
 		strHTTPAuth _httpAuth;
-
+		AsyncWebSocketClient *_client;
 	public:
 	
 		BrowserServerClass(uint16_t port);

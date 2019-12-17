@@ -129,6 +129,7 @@ void BoardClass::handleAdmin(AsyncWebServerRequest *request) {
 			request->arg("host").toCharArray(_eeprom.admin.hostUrl, request->arg("host").length() + 1);
 			_eeprom.admin.hostPin = request->arg("pin").toInt();
 			_eeprom.admin.numCheck = request->arg("num").toInt();
+			_eeprom.admin.countArray = request->arg("car").toInt();
 			goto save;
 		}
 save:
@@ -145,6 +146,8 @@ url:
 				return String(e->admin.hostPin);
 			else if (var == "num")
 				return String(e->admin.numCheck);
+			else if (var == "car")
+				return String(e->admin.countArray);
 			return String();
 		});
 }
