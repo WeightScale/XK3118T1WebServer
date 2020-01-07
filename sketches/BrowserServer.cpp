@@ -422,7 +422,7 @@ void onWsEvent(AsyncWebSocket * _server, AsyncWebSocketClient * client, AwsEvent
 				json["code"] = 400;
 		}else if (strcmp(command, "comm") == 0){
 			if (Board->softConnect()){
-				Board->add(new CommissioningTaskClass(json, client));
+				Board->add(new CommissioningTaskClass(root, client));
 				json["code"] = 200;
 			}
 			else

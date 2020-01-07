@@ -179,4 +179,4 @@ public:
 	}
 };*/
 
-extern AxesClass *Axes;
+extern AxesClass * Axes;

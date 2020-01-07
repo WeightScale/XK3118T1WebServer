@@ -133,7 +133,7 @@ private:
 	WiFiModuleClass * _wifi;	
 	String _versionSpiffs = "";
 	MemoryClass<MyEEPROMStruct> *_memory;
-	BrowserServerClass *_server;
+	//BrowserServerClass *_server;
 public:
 	BoardClass();
 	~BoardClass() {

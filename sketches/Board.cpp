@@ -197,8 +197,9 @@ void BoardClass::loadVersionSpiffs() {
 		_versionSpiffs = json["vrs"].as<String>();
 	}
 }
-;
 
-void shutDown() {	
-	Board->power()->off();
+void shutDown() {
+#ifdef INTERNAL_POWER
+	Board->power()->off();			  
+#endif // INTERNAL_POWER
 }

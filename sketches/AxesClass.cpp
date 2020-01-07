@@ -3,11 +3,7 @@
 #include "SerialPort.h"
 #include "Board.h"
 
-AxesClass *Axes;
-
-/*void AxesArrayTaskClass::run() {
-	Axes.doArray(_client);
-}*/
+AxesClass * Axes;
 
 void AxesPointTaskClass::run() {
 	Axes->doPoint(_weight);
@@ -28,7 +24,7 @@ void AxesClass::handle(float weight) {
 			if (_past == weight){
 				_array.push_back(weight);
 				if (_stab > (STABLE_MEASURE-3)){
-					Axes->doPoint(weight); /* Посылаем данные для клиентов */
+					doPoint(weight); /* Посылаем данные для клиентов */
 				}
 			}/*else{
 				if(webSocket.availableForWriteAll())
